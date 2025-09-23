@@ -2,7 +2,7 @@
 #include <conio.h>
 #include <windows.h>
 using namespace std;
-
+ 
 #define MAX_PASSWORD_SIZE 100
 #define RESET   "\033[0m"
 #define RED     "\033[31m"
