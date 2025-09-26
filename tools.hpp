@@ -5,6 +5,7 @@
 #include <vector>
 
 void clear_screen();
+void go_back();
 void read_password(std::string &);
 
 class Encryption {
