@@ -17,6 +17,14 @@ void clear_screen() {
     system("cls");
 }
 
+// -- go_back --
+// write go_back() when u need to return to the previous menu
+void go_back(){
+    cout<<CYAN<<"\nPress ANY KEY to go back\n"<<RESET;
+    cin.ignore();
+    cin.get();
+}
+
 // -- read_password --
 // use it to read password from user, just pass the password string to this function
 void read_password(string &password) {
