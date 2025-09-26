@@ -203,6 +203,9 @@ void AccountHolder::collect_info()
     go_back();
 }
 //Construtor for sign-in
+//==================================//
+//              SADIK               //
+//===================================//
 AccountHolder::AccountHolder(int index){
 
   cout<<"Welcome Back "<<Account_vector[index].name<<"!";
@@ -351,6 +354,9 @@ Employee::Employee(string name, string password){
 
 }
 
+//========================//
+//         RASHED         //
+//========================//
 /*Employee SignIn*/
 void Employee::employee_dashboard(int id){
   clear_screen();
@@ -629,7 +635,9 @@ void Admin::removeEmployee()
     go_back();
     return;
 }
-
+//=========================//
+//         TAHMINA         //
+//=========================//
 void Admin::cashManagement()
 {
     clear_screen();
@@ -700,3 +708,4 @@ int main()
     saveHistory("history.txt");
     return 0;
 }
+
