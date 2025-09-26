@@ -238,11 +238,11 @@ SignIn::SignIn() {
     }
 }
 void SignIn::signin_employee() {
-    cout << "Employee signing in (TODO)...\n";
+    cout << "Employee signing in...\n";
     go_back();
 }
 void SignIn::signin_general() {
-    cout << "General signing in (TODO)...\n";
+    cout << "General signing in...\n";
     go_back();
 }
 
@@ -367,14 +367,14 @@ void Admin::cashManagement() {
     clear_screen();
     cout << "Cash Management...\n";
     go_back();
-    //return;
+   
 }
 
 void Admin::complainBox() {
     clear_screen();
     cout << "Complaints...\n";
     go_back();
-    //return;
+  
 }
 
 /*-------------------------
@@ -402,3 +402,4 @@ int main() {
     saveEmployees("employee.txt");
     return 0;
 }
+
