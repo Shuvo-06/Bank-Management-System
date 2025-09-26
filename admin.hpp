@@ -1,0 +1,82 @@
+#ifndef ADMIN_H
+#define ADMIN_H
+#define ADMIN_PIN 1098765486
+
+
+#include <bits/stdc++.h>
+using namespace std;
+void main_menu();
+
+class Admin
+{
+
+    void manageEmployees();
+    void employeeInfo();
+    void cashManagement();
+    void complainBox();
+    void removeEmployee();
+
+public:
+    bool login(int);
+    friend void accntHolderInfo();
+    Admin();
+
+};
+
+class Employee {
+
+    string name, password, conf_pass;
+
+public:
+    static int employee_id;
+    static int employee_count;
+
+    Employee();
+    Employee(string,string);
+    void collect_info();
+    void employee_dashboard(int);
+};
+
+class AccountHolder{
+   string name,nid,pass,conf_pass;
+   double deposit;
+
+   public:
+       AccountHolder(double);
+       void collect_info();
+
+
+};
+
+class SignUp
+{
+    string name, password, confirm_pass, nid;
+    public:
+    void signup_employee();
+    void signup_general();
+    SignUp();
+
+};
+
+class SignIn
+{
+public:
+    SignIn();
+    void signin_employee();
+    void signin_general();
+};
+
+class Contact
+{
+public:
+    Contact();
+
+};
+
+class About
+{
+public:
+    About();
+};
+
+#endif
