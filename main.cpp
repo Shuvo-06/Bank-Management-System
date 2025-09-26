@@ -4,10 +4,16 @@
 using namespace std;
 
 /*-----------------------------------------------------------------------
-             Global Functions --> Name and Password Validation
+             Global Functions --> Name, NID and Password Validation
 -------------------------------------------------------------------------*/
 
 void main_menu();
+static vector<AccountData> Account_vector;
+static vector<EmployeeData> Employee_vector;
+int Employee::employee_id = 2307000;
+int Employee::employee_count = 0;
+
+
 
 /* Name validity */
 bool check_name_validity(string n)
@@ -33,9 +39,9 @@ bool check_pass_validity(string p)
     bool sp_char = false, upper = false, number = false;
     for (int i = 0; i < p.length(); i++)
     {
-        if ((p[i] - '0') >= 0 && (p[i] - '0' <= 9)) number = true;
-        if (p[i] >= 65 && p[i] <= 90) upper = true;
-        if (!((p[i] - '0') >= 0 && (p[i] - '0' <= 9)) &&(p[i] < 65 || (p[i] > 90 && p[i] < 97) || p[i] > 122)) sp_char = true;
+        if (isdigit(p[i])) number = true;
+        if (isupper(p[i])) upper = true;
+        if (!isdigit(p[i]) &&(p[i] < 65 || (p[i] > 90 && p[i] < 97) || p[i] > 122)) sp_char = true;
     }
 
     if (!number)
@@ -56,18 +62,36 @@ bool check_pass_validity(string p)
     return true;
 }
 
+/*NID validity*/
+bool check_nid_validity(string nid)
+{
+    if(nid.length() != 10) {
+        cout << "NID must be exactly 10 digits long.\n";
+        return false;
+    }
+
+    for(char &c : nid) {
+        if(!isdigit(c)){
+            cout << "NID must contain digits only.\n";
+            return false;
+        }
+    }
+
+
+    for(auto &acc:Account_vector) {
+        if (acc.nid == nid) {
+            cout << "This NID is already registered.\n";
+            return false;
+        }
+    }
+
+    return true;
+}
+
 /*--------------------------------------
        Account Holder Section
 ---------------------------------------*/
-struct AccountData
-{
-    string name;
-    string nid;
-    string password;
-    double deposit;
-};
 
-static vector<AccountData> Account_vector;
 
 /* Load accounts from file */
 void loadAccounts(const string &filename)
@@ -89,6 +113,26 @@ void loadAccounts(const string &filename)
     }
     file.close();
 }
+/*load accounts history from file*/
+void loadHistory(const string &filename) {
+    ifstream file(filename);
+    if (!file.is_open()) return;
+    string line;
+    while (getline(file, line)) {
+        if(line.empty()) continue;
+        stringstream ss(line);
+        string nid;
+        double amount;
+        ss >> nid >> amount;
+        for (auto &acc : Account_vector) {
+            if (acc.nid == nid) {
+                acc.history.push_back(amount);
+                break;
+            }
+        }
+    }
+    file.close();
+}
 
 /* Save accounts to file */
 void saveAccounts(const string &filename)
@@ -107,6 +151,7 @@ void saveAccounts(const string &filename)
 }
 
 /* Account holder signup */
+//Constructor for sign-up
 AccountHolder::AccountHolder(double deposit=0.0)
 {
     this->deposit = deposit;
@@ -145,14 +190,36 @@ void AccountHolder::collect_info()
         }
     }
 
-    cout << "NID Number: ";
-    cin >> nid;
+
+    while(true){
+         cout<<"NID Number: ";
+         cin>>nid;
+         if(check_nid_validity(nid))break;
+         else cout<<"Please Try Again.";
+
+    }
     Account_vector.push_back({name, nid, pass, deposit});
     cout<<"Congrats! From now on, you are our nigga customer!";
     go_back();
 }
+//Construtor for sign-in
+AccountHolder::AccountHolder(int index){
+
+  cout<<"Welcome Back "<<Account_vector[index].name<<"!";
+  //Account holder Dashboard will be created using menu function
+  //Following operations will be done in this section:
+  //1. Balance Enquiry (just print Account_vector[index].deposit)
+  //2. Request Deposit ( call rashed er banano function )
+  //3. Request Withdraw ( call rashed er function)
+  //4. Show Account History ( output the content of the vector Account_vector[index].history)
+  //5. Complain Box
+  //6. Go Back (call go_back() )
+  cout<<"Account holder dashboard...TODO by SADIK.";
+
+
+}
 /*Account Holder Info*/
-void accntHolderInfo()
+void AccountHolder::accntHolderInfo()
 {
     clear_screen();
     cout << "=================== " << CYAN << "ACCOUNT HOLDERS INFO" << RESET << " ===================\n";
@@ -160,7 +227,7 @@ void accntHolderInfo()
     cout << "| " << RED << "Name" << RESET
          << "             | " << RED << "NID" << RESET
          << "              | " << RED << "Password" << RESET
-         << "          | " << RED << "Deposit" << RESET << "    |\n";
+         << "         | " << RED << "Deposit" << RESET << "     |\n";
     cout << "+------------------+------------------+------------------+-------------+\n";
 
     for (auto &acc : Account_vector)
@@ -176,21 +243,21 @@ void accntHolderInfo()
     go_back();
     return;
 }
-
+/*save account history into file*/
+void saveHistory(const string &filename) {
+    ofstream file(filename, ios::trunc);
+    if (!file.is_open()) return;
+    for (auto &acc : Account_vector) {
+        for (double t : acc.history) {
+            file << acc.nid << " " << t << "\n";
+        }
+    }
+    file.close();
+}
 
 /*---------------------------------
         Employee Section
 ----------------------------------*/
-struct EmployeeData
-{
-    int id;
-    string name, password;
-};
-
-static vector<EmployeeData> Employee_vector;
-
-int Employee::employee_id = 2307000;
-int Employee::employee_count = 0;
 
 /* Load employees */
 void loadEmployees(const string &filename)
@@ -290,15 +357,17 @@ void Employee::employee_dashboard(int id){
   //Employee ID is passed in this function, and it is a member function, so it can access employee name and password directly.
   //My Proposal: Employee's Info will be shown above the dashboard (id and name)
   //This Dashboard will contain 5 options.
-  //1. View Account Holder Info (just call the friend function accntHolderInfo()) -->This one is done already
-  //2. Remove Account Holder (just call remove_account() function) --this function is not ready yet, u can write it in Employee class.
-  //3. Account Management (just make a function that performs simple arithmatics i.e adding money in deposit or withdrawal of money and updates account holder deposit)
-  // to updae account holder info --> perform linear search with nid in Account_vector vector and update the deposit.
+  //1. View Account Holder Info (just call the function AccountHolder::accntHolderInfo()
+  //2. Remove Account Holder (just call remove_account() function)
+  //3. Account Management
+  // Make 2 functions, deposit request and withdraw request that will be called by the account holder both have
+  // parameters (index, amount) perform necessary operations and update the Account_vector[index].history vector,
+  //  prefixed with + and - signs. also update current deposit via Account_vector[index].deposit
   //4. Complain Box (call complain_box function apatoto)
   //5. Go Back (call go_back() )
 
 
-  cout<<"Employee Dashboard....(TODO)";
+  cout<<"Employee Dashboard.... TODO by RASHED";
 
 }
 
@@ -392,7 +461,30 @@ void SignIn::signin_employee()
 }
 void SignIn::signin_general()
 {
-    cout << "General signing in...\n";
+    string name,nid,password;
+    cout<<"Enter Your NID: ";
+    cin>>nid;
+    cout<<"Enter Password: ";
+    read_password(password);
+
+    int index=-1;
+    for(int i=0; i<Account_vector.size(); i++){
+        if(Account_vector[i].nid==nid){
+            index=i;
+            break;
+        }
+    }
+    if(index==-1){
+        cout<<"Sorry Wrong Credentials.";
+    }else{
+        Encryption::encrypt(password);
+        if(Account_vector[index].password!=password){
+            cout<<"Sorry Wrong Credentials.";
+        }else{
+          AccountHolder temp(index);
+        }
+    }
+
     go_back();
 }
 
@@ -453,7 +545,7 @@ Admin::Admin()
             manageEmployees();
             break;
         case 2:
-            accntHolderInfo();
+            AccountHolder::accntHolderInfo();
             break;
         case 3:
             cashManagement();
@@ -541,7 +633,13 @@ void Admin::removeEmployee()
 void Admin::cashManagement()
 {
     clear_screen();
-    cout << "Cash Management...\n";
+    cout << "Cash Management...TODO by TAHMINA\n";
+    //Loop through Account vector, (syntax : Account_vector[i].history[j])
+    //Calculate total deposit ( Account_vector[i].history[j] >0 )
+    //Calculate total withdraw (Account_vector[i].history[j])<0 )
+    //Print formatted output, for all the accounts, only print nid and history. nothing else
+    //Finally output the total money deposited or withdrawn
+
     go_back();
     return;
 }
@@ -595,9 +693,10 @@ int main()
 {
     loadAccounts("customer.txt");
     loadEmployees("employee.txt");
+    loadHistory("history.txt");
     main_menu();
     saveAccounts("customer.txt");
     saveEmployees("employee.txt");
+    saveHistory("history.txt");
     return 0;
 }
-
