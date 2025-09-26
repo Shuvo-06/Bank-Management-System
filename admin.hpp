@@ -7,6 +7,22 @@
 using namespace std;
 void main_menu();
 
+
+class AccountHolder{
+   string name,nid,pass,conf_pass;
+   double deposit;
+
+   public:
+       AccountHolder(double);
+       AccountHolder(int);
+       static void accntHolderInfo();
+       void collect_info();
+
+
+};
+
+
+
 class Admin
 {
 
@@ -18,10 +34,79 @@ class Admin
 
 public:
     bool login(int);
-    friend void accntHolderInfo();
     Admin();
 
 };
+
+class Employee {
+
+    string name, password, conf_pass;
+
+public:
+    static int employee_id;
+    static int employee_count;
+
+    Employee();
+    Employee(string,string);
+    void collect_info();
+    void employee_dashboard(int);
+
+};
+
+
+
+class SignUp
+{
+    string name, password, confirm_pass, nid;
+    public:
+    void signup_employee();
+    void signup_general();
+    SignUp();
+
+};
+
+class SignIn
+{
+public:
+    SignIn();
+    void signin_employee();
+    void signin_general();
+};
+
+class Contact
+{
+public:
+    Contact();
+
+};
+
+class About
+{
+public:
+    About();
+};
+
+struct AccountData
+{
+    string name;
+    string nid;
+    string password;
+    double deposit;
+    vector<double> history;
+};
+
+
+
+struct EmployeeData
+{
+    int id;
+    string name, password;
+};
+
+
+
+
+#endif
 
 class Employee {
 
@@ -80,3 +165,4 @@ public:
 };
 
 #endif
+
