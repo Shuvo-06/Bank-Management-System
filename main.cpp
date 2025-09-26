@@ -290,8 +290,8 @@ void Employee::employee_dashboard(int id){
   //Employee ID is passed in this function, and it is a member function, so it can access employee name and password directly.
   //My Proposal: Employee's Info will be shown above the dashboard (id and name)
   //This Dashboard will contain 5 options.
-  //1. View Account Holder Info (just call the friend function accntHolderInfo()
-  //2. Remove Account Holder (just call remove_account() function)
+  //1. View Account Holder Info (just call the friend function accntHolderInfo()) -->This one is done already
+  //2. Remove Account Holder (just call remove_account() function) --this function is not ready yet, u can write it in Employee class.
   //3. Account Management (just make a function that performs simple arithmatics i.e adding money in deposit or withdrawal of money and updates account holder deposit)
   // to updae account holder info --> perform linear search with nid in Account_vector vector and update the deposit.
   //4. Complain Box (call complain_box function apatoto)
@@ -600,3 +600,4 @@ int main()
     saveEmployees("employee.txt");
     return 0;
 }
+
