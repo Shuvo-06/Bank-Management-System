@@ -16,14 +16,15 @@ int Employee::employee_count = 0;
 
 
 /* Name validity */
-bool check_name_validity(string n)
+bool check_name_validity(const string &n)
 {
-    for (int i = 0; i < n.length(); i++)
+    if (n.empty()) return false;
+    if (!isupper(n[0])) return false;
+
+    for (char c : n)
     {
-        if (!isupper(n[0])) return false;
-        if (n[i] < 65) return false;
-        if (n[i] > 90 && n[i] < 97) return false;
-        if (n[i] > 122) return false;
+        if (c == ' ') continue;
+        if (!isalpha(c)) return false;
     }
     return true;
 }
@@ -162,7 +163,7 @@ void AccountHolder::collect_info()
     while (true)
     {
         cout << "Name: ";
-        cin >> name;
+        getline(cin >> ws, name);
         if (check_name_validity(name)) break;
         else cout << "Invalid name. Please try again.\n";
     }
@@ -202,6 +203,7 @@ void AccountHolder::collect_info()
     saveAccounts("customer.txt");
     cout<<"Congrats! You have successfully signed up!";
     go_back();
+    return;
 }
 //Construtor for sign-in
 //==================================//
@@ -226,24 +228,24 @@ AccountHolder::AccountHolder(int index){
 void AccountHolder::accntHolderInfo()
 {
     clear_screen();
-    cout << "=================== " << CYAN << "ACCOUNT HOLDERS INFO" << RESET << " ===================\n";
-    cout << "+------------------+------------------+------------------+-------------+\n";
+    cout << "================================ " << CYAN << "ACCOUNT HOLDERS INFO" << RESET << " ================================\n";
+    cout << "+----------------------------------+------------------+------------------+-------------+\n";
     cout << "| " << RED << "Name" << RESET
-         << "             | " << RED << "NID" << RESET
+         << "                             | " << RED << "NID" << RESET
          << "              | " << RED << "Password" << RESET
          << "         | " << RED << "Deposit" << RESET << "     |\n";
-    cout << "+------------------+------------------+------------------+-------------+\n";
+    cout << "+----------------------------------+------------------+------------------+-------------+\n";
 
     for (auto &acc : Account_vector)
     {
         string pass = acc.password;
         Encryption::encrypt(pass);
-        cout << "| " << setw(16) << left << acc.name
-             << " | " << setw(16) << left << acc.nid
+        cout << "| " << setw(28) << left << acc.name
+             << "     | " << setw(16) << left << acc.nid
              << " | " << setw(16) << left << pass
              << " | " << setw(11) << left << acc.deposit << " |\n";
     }
-    cout << "+------------------+------------------+------------------+-------------+\n";
+    cout << "+----------------------------------+------------------+------------------+-------------+\n";
     go_back();
     return;
 }
@@ -307,7 +309,7 @@ void Employee::collect_info()
     while (true)
     {
         cout << "Name: ";
-        cin >> name;
+        getline(cin >> ws, name);
         if (check_name_validity(name)) break;
         else cout << "Invalid name. Please try again.\n";
     }
@@ -339,6 +341,7 @@ void Employee::collect_info()
     saveEmployees("employee.txt");
     cout<<"Congrats! You signed up successfully as our Employee!";
     go_back();
+    return;
 }
 
 //Constructor for SignUp
@@ -362,20 +365,6 @@ Employee::Employee(string name, string password){
 /*Employee SignIn*/
 void Employee::employee_dashboard(int id){
   clear_screen();
-  //Employee ID is passed in this function, and it is a member function, so it can access employee name and password directly.
-  //My Proposal: Employee's Info will be shown above the dashboard (id and name)
-  //This Dashboard will contain 5 options.
-  //1. View Account Holder Info (just call the function AccountHolder::accntHolderInfo()
-  //2. Remove Account Holder (just call remove_account() function)
-  //3. Account Management
-  // Make 2 functions, deposit request and withdraw request that will be called by the account holder both have
-  // parameters (index, amount) perform necessary operations and update the Account_vector[index].history vector,
-  //  prefixed with + and - signs. also update current deposit via Account_vector[index].deposit
-  //4. Complain Box (call complain_box function apatoto)
-  //5. Go Back (call go_back() )
-
-
-  cout<<"Employee Dashboard.... TODO by RASHED"<<endl;
   cout<<"Welcome "<<name;
     while (true)
     {
@@ -386,7 +375,7 @@ void Employee::employee_dashboard(int id){
             "Remove Account Holder",
             "Account Management",
             "Complaints",
-            "Go Back"
+            "Sign Out"
         };
         int employee_option = menu(options, "EMPLOYEE DASHBOARD");
         switch (employee_option)
@@ -406,7 +395,7 @@ void Employee::employee_dashboard(int id){
         case 4:
             complainBox();
             break;
-        case 5:
+        default:
             return;
         }
     }
@@ -506,11 +495,13 @@ void Employee::account_management()
             cout<<endl<<"Enter amount: ";
             cin>>amount;
             withdraw_request(index,amount);
+            go_back();
             break;
         case 1:
             cout<<endl<<"Enter amount: ";
             cin>>amount;
             deposit_request(index,amount);
+            go_back();
             break;
         case 2:
             cout << "Transaction History:\n";
@@ -606,7 +597,7 @@ SignIn::SignIn()
     while (true)
     {
         vector<string> SignIn_menu = {"Admin", "Employee", "General", "Go Back"};
-        int op = menu(SignIn_menu);
+        int op = menu(SignIn_menu,"SIGN IN");
         switch (op)
         {
         case 0:
@@ -727,7 +718,7 @@ Admin::Admin()
             "Account Holders Info",
             "Cash Management",
             "Complaints",
-            "Go Back"
+            "Sign Out"
         };
         int admin_option = menu(options, "ADMIN DASHBOARD");
         switch (admin_option)
@@ -779,25 +770,26 @@ void Admin::manageEmployees()
 void Admin::employeeInfo()
 {
     clear_screen();
-    cout << "======================= " << CYAN << "EMPLOYEE INFO" << RESET << " =======================\n";
-    cout << "+--------------+----------------------+----------------------+\n";
+    cout << "========================== " << CYAN << "EMPLOYEE INFO" << RESET << " ==========================\n";
+    cout << "+--------------+------------------------------+----------------------+\n";
     cout << "| " << RED << "ID" << RESET
          << "           | " << RED << "Name" << RESET
-         << "                 | " << RED << "Password" << RESET << "             |\n";
-    cout << "+--------------+----------------------+----------------------+\n";
+         << "                         | " << RED << "Password" << RESET << "             |\n";
+    cout << "+--------------+------------------------------+----------------------+\n";
 
     for (auto &emp : Employee_vector)
     {
         string password = emp.password;
         Encryption::encrypt(password); // decrypt for display
         cout << "| " << setw(12) << left << emp.id
-             << " | " << setw(20) << left << emp.name
+             << " | " << setw(28) << left << emp.name
              << " | " << setw(20) << left << password << " |\n";
     }
-    cout << "+--------------+----------------------+----------------------+\n";
+    cout << "+--------------+------------------------------+----------------------+\n";
     go_back();
     return;
 }
+
 void Admin::searchEmployee()
 {
     clear_screen();
