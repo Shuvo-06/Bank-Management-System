@@ -6,6 +6,9 @@
 #include <bits/stdc++.h>
 using namespace std;
 void main_menu();
+void complainBox();
+void deposit_request(int,double);
+void withdraw_request(int,double);
 
 
 class AccountHolder{
@@ -19,6 +22,7 @@ class AccountHolder{
        void collect_info();
 
 
+
 };
 
 
@@ -29,8 +33,8 @@ class Admin
     void manageEmployees();
     void employeeInfo();
     void cashManagement();
-    void complainBox();
     void removeEmployee();
+    void searchEmployee();
 
 public:
     bool login(int);
@@ -50,6 +54,11 @@ public:
     Employee(string,string);
     void collect_info();
     void employee_dashboard(int);
+    void remove_account();
+    void account_management();
+    void search_account();
+
+
 
 };
 
