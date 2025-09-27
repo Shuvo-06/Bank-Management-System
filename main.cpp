@@ -339,7 +339,8 @@ void Employee::collect_info()
 
     Employee_vector.push_back({employee_id, name, password});
     saveEmployees("employee.txt");
-    cout<<"Congrats! You signed up successfully as our Employee!";
+    cout<<"Congrats! You signed up successfully as our Employee!\n";
+    cout<<"Your ID: "<<CYAN<<Employee:: employee_id<<RESET;
     go_back();
     return;
 }
@@ -564,7 +565,7 @@ SignUp::SignUp()
     while (true)
     {
         vector<string> SignUp_menu = {"Employee", "General", "Go Back"};
-        int op = menu(SignUp_menu);
+        int op = menu(SignUp_menu,"SIGN UP");
         switch (op)
         {
         case 0:
@@ -948,4 +949,5 @@ int main()
     saveHistory("history.txt");
     return 0;
 }
+
 
