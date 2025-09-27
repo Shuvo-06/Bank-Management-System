@@ -847,12 +847,46 @@ void Admin::removeEmployee()
 void Admin::cashManagement()
 {
     clear_screen();
-    cout << "Cash Management...TODO by TAHMINA\n";
-    //Loop through Account vector, (syntax : Account_vector[i].history[j])
-    //Calculate total deposit ( Account_vector[i].history[j] >0 )
-    //Calculate total withdraw (Account_vector[i].history[j])<0 )
-    //Print formatted output, for all the accounts, only print nid and history. nothing else
-    //Finally output the total money deposited or withdrawn
+    cout << "==================================== " << CYAN << "CASH MANAGEMENT" << RESET << " =======================================\n";
+    double total_Deposit = 0.0;
+    double total_Withdraw = 0.0;
+
+    cout << "+----------------------+----------------------+----------------------+----------------------+\n";
+    cout << "| " << RED << "NID" << RESET
+         << "                  | " << RED << "Deposited" << RESET
+         << "            | " << RED << "Withdrawn" << RESET
+         << "            | " << RED << "Net Balance" << RESET << "          |\n";
+    cout << "+----------------------+----------------------+----------------------+----------------------+\n";
+
+    for (size_t i = 0; i < Account_vector.size(); i++)
+    {
+        double deposit = 0.0, withdraw = 0.0;
+
+        // calculate per-account deposits & withdrawals
+        for (size_t j = 0; j < Account_vector[i].history.size(); j++)
+        {
+            if (Account_vector[i].history[j] > 0)
+                deposit += Account_vector[i].history[j];
+            else
+                withdraw += (-Account_vector[i].history[j]);
+        }
+
+        // update global totals
+        total_Deposit += deposit;
+        total_Withdraw += withdraw;
+
+        // print account line with larger spacing
+        cout << "| " << setw(20) << left << Account_vector[i].nid
+             << " | " << setw(20) << left << deposit
+             << " | " << setw(20) << left << withdraw
+             << " | " << setw(20) << left << (deposit - withdraw)
+             << " |\n";
+    }
+
+    cout << "+----------------------+----------------------+----------------------+----------------------+\n";
+    cout << "Total Deposited : " << total_Deposit << "\n";
+    cout << "Total Withdrawn : " << total_Withdraw << "\n";
+    cout << "Net Balance in Bank : " << (total_Deposit - total_Withdraw) << "\n";
 
     go_back();
     return;
@@ -914,3 +948,4 @@ int main()
     saveHistory("history.txt");
     return 0;
 }
+
