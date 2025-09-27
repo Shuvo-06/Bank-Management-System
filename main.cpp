@@ -203,9 +203,6 @@ void AccountHolder::collect_info()
     go_back();
 }
 //Construtor for sign-in
-//==================================//
-//              SADIK               //
-//===================================//
 AccountHolder::AccountHolder(int index){
 
   cout<<"Welcome Back "<<Account_vector[index].name<<"!";
@@ -216,9 +213,10 @@ AccountHolder::AccountHolder(int index){
   //3. Request Withdraw ( call rashed er function)
   //4. Show Account History ( output the content of the vector Account_vector[index].history)
   //5. Complain Box
-  //6. Go Back (call go_back() )
+  //6. Sign Out
   cout<<"Account holder dashboard...TODO by SADIK.";
-
+  //go_back();
+  return;
 
 }
 /*Account Holder Info*/
@@ -354,9 +352,6 @@ Employee::Employee(string name, string password){
 
 }
 
-//========================//
-//         RASHED         //
-//========================//
 /*Employee SignIn*/
 void Employee::employee_dashboard(int id){
   clear_screen();
@@ -364,16 +359,18 @@ void Employee::employee_dashboard(int id){
   //My Proposal: Employee's Info will be shown above the dashboard (id and name)
   //This Dashboard will contain 5 options.
   //1. View Account Holder Info (just call the function AccountHolder::accntHolderInfo()
-  //2. Remove Account Holder (just call remove_account() function) --> remove_account() function is non-exitent till now btw
+  //2. Remove Account Holder (just call remove_account() function)
   //3. Account Management
   // Make 2 functions, deposit request and withdraw request that will be called by the account holder both have
   // parameters (index, amount) perform necessary operations and update the Account_vector[index].history vector,
   //  prefixed with + and - signs. also update current deposit via Account_vector[index].deposit
   //4. Complain Box (call complain_box function apatoto)
-  //5. Go Back (call go_back() )
+  //5. Sign Out
 
 
   cout<<"Employee Dashboard.... TODO by RASHED";
+  //go_back();
+  return;
 
 }
 
@@ -418,7 +415,7 @@ SignIn::SignIn()
     while (true)
     {
         vector<string> SignIn_menu = {"Admin", "Employee", "General", "Go Back"};
-        int op = menu(SignIn_menu);
+        int op = menu(SignIn_menu,"SIGN IN ");
         switch (op)
         {
         case 0:
@@ -539,7 +536,7 @@ Admin::Admin()
             "Account Holders Info",
             "Cash Management",
             "Complaints",
-            "Go Back"
+            "Sign Out"
         };
         int admin_option = menu(options, "ADMIN DASHBOARD");
         switch (admin_option)
@@ -635,9 +632,7 @@ void Admin::removeEmployee()
     go_back();
     return;
 }
-//=========================//
-//         TAHMINA         //
-//=========================//
+
 void Admin::cashManagement()
 {
     clear_screen();
@@ -708,5 +703,3 @@ int main()
     saveHistory("history.txt");
     return 0;
 }
-
-
