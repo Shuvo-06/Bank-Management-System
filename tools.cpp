@@ -2,6 +2,7 @@
 #include <iostream>
 #include <conio.h>
 #include <windows.h>
+#include <limits>
 using namespace std;
 
 // -- Color codes
@@ -82,7 +83,16 @@ void Menu(int choice, int scWidth, int scHeight,
             if (i == choice) cout << ">> ";
             else cout << "   ";
 
-            cout << RED << "exit" << RESET;
+            cout << RED << "Exit" << RESET;
+
+            if (i == choice) cout << " <<";
+            cout << "\n";
+        }else if(menu[i]=="sign out" || menu[i]=="Sign Out" || menu[i]=="Sign out"){
+
+           if (i == choice) cout << ">> ";
+            else cout << "   ";
+
+            cout << RED << "Sign Out" << RESET;
 
             if (i == choice) cout << " <<";
             cout << "\n";
