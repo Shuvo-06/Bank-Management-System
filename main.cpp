@@ -364,7 +364,7 @@ void Employee::employee_dashboard(int id){
   //My Proposal: Employee's Info will be shown above the dashboard (id and name)
   //This Dashboard will contain 5 options.
   //1. View Account Holder Info (just call the function AccountHolder::accntHolderInfo()
-  //2. Remove Account Holder (just call remove_account() function)
+  //2. Remove Account Holder (just call remove_account() function) --> remove_account() function is non-exitent till now btw
   //3. Account Management
   // Make 2 functions, deposit request and withdraw request that will be called by the account holder both have
   // parameters (index, amount) perform necessary operations and update the Account_vector[index].history vector,
@@ -708,4 +708,5 @@ int main()
     saveHistory("history.txt");
     return 0;
 }
+
 
