@@ -199,10 +199,14 @@ void AccountHolder::collect_info()
 
     }
     Account_vector.push_back({name, nid, pass, deposit});
-    cout<<"Congrats! From now on, you are our nigga customer!";
+    saveAccounts("customer.txt");
+    cout<<"Congrats! You have successfully signed up!";
     go_back();
 }
 //Construtor for sign-in
+//==================================//
+//              SADIK               //
+//===================================//
 AccountHolder::AccountHolder(int index){
 
   cout<<"Welcome Back "<<Account_vector[index].name<<"!";
@@ -213,10 +217,9 @@ AccountHolder::AccountHolder(int index){
   //3. Request Withdraw ( call rashed er function)
   //4. Show Account History ( output the content of the vector Account_vector[index].history)
   //5. Complain Box
-  //6. Sign Out
+  //6. Go Back (call go_back() )
   cout<<"Account holder dashboard...TODO by SADIK.";
-  //go_back();
-  return;
+
 
 }
 /*Account Holder Info*/
@@ -333,7 +336,8 @@ void Employee::collect_info()
     }
 
     Employee_vector.push_back({employee_id, name, password});
-    cout<<"Congrats! You signed up successfully as our nigga kamla!";
+    saveEmployees("employee.txt");
+    cout<<"Congrats! You signed up successfully as our Employee!";
     go_back();
 }
 
@@ -352,6 +356,9 @@ Employee::Employee(string name, string password){
 
 }
 
+//========================//
+//         RASHED         //
+//========================//
 /*Employee SignIn*/
 void Employee::employee_dashboard(int id){
   clear_screen();
@@ -365,14 +372,198 @@ void Employee::employee_dashboard(int id){
   // parameters (index, amount) perform necessary operations and update the Account_vector[index].history vector,
   //  prefixed with + and - signs. also update current deposit via Account_vector[index].deposit
   //4. Complain Box (call complain_box function apatoto)
-  //5. Sign Out
+  //5. Go Back (call go_back() )
 
 
-  cout<<"Employee Dashboard.... TODO by RASHED";
-  //go_back();
-  return;
+  cout<<"Employee Dashboard.... TODO by RASHED"<<endl;
+  cout<<"Welcome "<<name;
+    while (true)
+    {
+        vector<string> options =
+        {
+            "View Account Holder Info",
+            "Search Account",
+            "Remove Account Holder",
+            "Account Management",
+            "Complaints",
+            "Go Back"
+        };
+        int employee_option = menu(options, "EMPLOYEE DASHBOARD");
+        switch (employee_option)
+        {
+        case 0:
+            AccountHolder::accntHolderInfo();
+            break;
+        case 1:
+            search_account();
+            break;
+        case 2:
+            remove_account();
+            break;
+        case 3:
+            account_management();
+            break;
+        case 4:
+            complainBox();
+            break;
+        case 5:
+            return;
+        }
+    }
+
 
 }
+void Employee::remove_account()
+{
+        clear_screen();
+    string nrid;
+    cout << "Enter Account NID: ";
+    cin >> nrid;
+
+    auto it = lower_bound(Account_vector.begin(), Account_vector.end(), nrid,
+                          [](const AccountData &acc, string value)
+    {
+        return acc.nid < value;
+    });
+
+    if (it != Account_vector.end() && it->nid == nrid)
+    {
+        cout << "Removing Account Holder: " << it->name << " (ID: " << it->nid << ")\n";
+        Account_vector.erase(it);
+    }
+    else
+    {
+        cout << "Account with NID " << nrid << " not found!\n";
+    }
+
+    go_back();
+    return;
+}
+void Employee::search_account()
+{
+        clear_screen();
+    string sid;
+    cout<<"Enter Account ID: ";
+    cin>>sid;
+
+        auto it = lower_bound(Account_vector.begin(), Account_vector.end(), sid,
+                          [](const AccountData &acc, string value)
+    {
+        return acc.nid < value;
+    });
+        if (it != Account_vector.end() && it->nid == sid)
+    {
+        cout << "Account: " << it->name << " (ID: " << it->nid << ")<<Balance: "<<it->deposit<<"\n";
+    }
+    else
+    {
+        cout << "Account with ID " << sid << " not found!\n";
+    }
+
+    go_back();
+    return;
+}
+void Employee::account_management()
+{
+          clear_screen();
+    cout<<"Account Management"<<endl;
+
+    string nid;
+    cout << "Enter Account NID: ";
+    cin >> nid;
+
+    int index = -1;
+    for (int i = 0; i < Account_vector.size(); i++)
+    {
+        if (Account_vector[i].nid == nid)
+        {
+            index = i;
+            break;
+        }
+    }
+
+    if (index == -1)
+    {
+        cout << "Account not found.\n";
+        go_back();
+        return;
+    }
+    double amount;
+        while (true)
+    {
+        clear_screen();
+        vector<string> options =
+        {
+            "Account Withdrawal",
+            "Account Deposit",
+            "Transaction History",
+            "Go Back"
+        };
+        int employee_option = menu(options, "ACCOUNT MANAGEMENT");
+        switch (employee_option)
+        {
+        case 0:
+            cout<<endl<<"Enter amount: ";
+            cin>>amount;
+            withdraw_request(index,amount);
+            break;
+        case 1:
+            cout<<endl<<"Enter amount: ";
+            cin>>amount;
+            deposit_request(index,amount);
+            break;
+        case 2:
+            cout << "Transaction History:\n";
+            for (double t : Account_vector[index].history)
+            {
+                cout<<nid<<": ";
+                if (t >= 0) cout << "+";
+                cout << t << "\n";
+            }
+            go_back();
+        break;
+        case 3:
+            return;
+        }
+    }
+}
+void deposit_request(int index, double amount)
+{
+    if (amount <= 0)
+    {
+        cout << "Invalid deposit amount.\n";
+        return;
+    }
+
+    Account_vector[index].deposit += amount;
+    Account_vector[index].history.push_back(amount); // Positive for deposit
+    cout << "Successfully deposited " << amount << ". New balance: " << Account_vector[index].deposit << "\n";
+
+    saveAccounts("customer.txt");
+    saveHistory("history.txt");
+}
+void withdraw_request(int index, double amount)
+{
+    if (amount <= 0)
+    {
+        cout << "Invalid withdrawal amount.\n";
+        return;
+    }
+
+    if (Account_vector[index].deposit < amount)
+    {
+        cout << "Insufficient balance.\n";
+        return;
+    }
+
+    Account_vector[index].deposit -= amount;
+    Account_vector[index].history.push_back(-amount); // Negative for withdrawal
+    cout << "Successfully withdrew " << amount << ". New balance: " << Account_vector[index].deposit << "\n";
+
+    saveAccounts("customer.txt");
+    saveHistory("history.txt");
+}
+
 
 /*-------------------------------
          Sign Up Section
@@ -415,7 +606,7 @@ SignIn::SignIn()
     while (true)
     {
         vector<string> SignIn_menu = {"Admin", "Employee", "General", "Go Back"};
-        int op = menu(SignIn_menu,"SIGN IN ");
+        int op = menu(SignIn_menu);
         switch (op)
         {
         case 0:
@@ -503,7 +694,7 @@ Contact::Contact()
 About::About()
 {
     clear_screen();
-    cout << "Just 7 random niggas from KUET CSE\n";
+    cout << "5 random lads and 2 ladies from KUET CSE\n";
     go_back();
 
 }
@@ -536,7 +727,7 @@ Admin::Admin()
             "Account Holders Info",
             "Cash Management",
             "Complaints",
-            "Sign Out"
+            "Go Back"
         };
         int admin_option = menu(options, "ADMIN DASHBOARD");
         switch (admin_option)
@@ -566,7 +757,7 @@ void Admin::manageEmployees()
 {
     while (true)
     {
-        vector<string> options = {"View Employee", "Remove Employee", "Go Back"};
+        vector<string> options = {"View Employee","Search Employee", "Remove Employee", "Go Back"};
         int op = menu(options, "MANAGE EMPLOYEES");
         switch (op)
         {
@@ -574,9 +765,12 @@ void Admin::manageEmployees()
             employeeInfo();
             break;
         case 1:
-            removeEmployee();
+            searchEmployee();
             break;
         case 2:
+            removeEmployee();
+            break;
+        case 3:
             return;
         }
     }
@@ -604,7 +798,30 @@ void Admin::employeeInfo()
     go_back();
     return;
 }
+void Admin::searchEmployee()
+{
+    clear_screen();
+    int sid;
+    cout<<"Enter employee ID: ";
+    cin>>sid;
 
+        auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), sid,
+                          [](const EmployeeData &emp, int value)
+    {
+        return emp.id < value;
+    });
+        if (it != Employee_vector.end() && it->id == sid)
+    {
+        cout << "Employee: " << it->name << " (ID: " << it->id << ")\n";
+    }
+    else
+    {
+        cout << "Employee with ID " << sid << " not found!\n";
+    }
+
+    go_back();
+    return;
+}
 void Admin::removeEmployee()
 {
     clear_screen();
@@ -632,7 +849,9 @@ void Admin::removeEmployee()
     go_back();
     return;
 }
-
+//=========================//
+//         TAHMINA         //
+//=========================//
 void Admin::cashManagement()
 {
     clear_screen();
@@ -647,7 +866,7 @@ void Admin::cashManagement()
     return;
 }
 
-void Admin::complainBox()
+void complainBox()
 {
     clear_screen();
     cout << "Complaints...\n";
