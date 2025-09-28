@@ -220,6 +220,58 @@ AccountHolder::AccountHolder(int index){
   //4. Show Account History ( output the content of the vector Account_vector[index].history)
   //5. Complain Box
   //6. Go Back (call go_back() )
+    while (true) {
+        vector<string> options = {
+            "Balance Enquiry",
+            "Deposit Money",
+            "Withdraw Money",
+            "Transaction History",
+            "Complain Box",
+            "Go Back"
+        };
+
+        int choice = menu(options, "ACCOUNT HOLDER DASHBOARD");
+        switch (choice) {
+            case 0: // Balance enquiry
+                cout << "Your Current Balance: " << Account_vector[index].deposit << "\n";
+                go_back();
+                break;
+
+            case 1: { // Deposit
+                double amount;
+                cout << "Enter amount to deposit: ";
+                cin >> amount;
+                deposit_request(index, amount);
+                go_back();
+                break;
+            }
+
+            case 2: { // Withdraw
+                double amount;
+                cout << "Enter amount to withdraw: ";
+                cin >> amount;
+                withdraw_request(index, amount);
+                go_back();
+                break;
+            }
+
+            case 3: // Transaction History
+                cout << "Transaction History:\n";
+                for (double t : Account_vector[index].history) {
+                    if (t >= 0) cout << "+";
+                    cout << t << "\n";
+                }
+                go_back();
+                break;
+
+            case 4: // Complain Box
+                complainBox();
+                break;
+
+            case 5: // Go Back
+                return;
+        }
+    }
   cout<<"Account holder dashboard...TODO by SADIK.";
 
 
@@ -949,5 +1001,6 @@ int main()
     saveHistory("history.txt");
     return 0;
 }
+
 
 
