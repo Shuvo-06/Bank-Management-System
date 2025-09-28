@@ -34,7 +34,7 @@ bool check_pass_validity(string p)
 {
     if (p.length() < 8)
     {
-        cout << "Password must be at least 8 characters long.\n";
+        Msg("Password must be at least 8 characters long.","error");
         return false;
     }
     bool sp_char = false, upper = false, number = false;
@@ -47,17 +47,17 @@ bool check_pass_validity(string p)
 
     if (!number)
     {
-        cout << "Password must contain at least 1 digit.";
+        Msg("Password must contain at least 1 digit.","error");
         return false;
     }
     if (!upper)
     {
-        cout << "Password must contain at least 1 uppercase letter.";
+        Msg("Password must contain at least 1 uppercase letter.", "error");
         return false;
     }
     if (!sp_char)
     {
-        cout << "Password must contain at least 1 special character.";
+        Msg("Password must contain at least 1 special character.","error");
         return false;
     }
     return true;
@@ -66,22 +66,27 @@ bool check_pass_validity(string p)
 /*NID validity*/
 bool check_nid_validity(string nid)
 {
-    if(nid.length() != 10) {
-        cout << "NID must be exactly 10 digits long.\n";
+    if(nid.length() != 10)
+    {
+        Msg("NID must be exactly 10 digits long", "error");
         return false;
     }
 
-    for(char &c : nid) {
-        if(!isdigit(c)){
-            cout << "NID must contain digits only.\n";
+    for(char &c : nid)
+    {
+        if(!isdigit(c))
+        {
+            Msg("NID must contain digits only.", "error");
             return false;
         }
     }
 
 
-    for(auto &acc:Account_vector) {
-        if (acc.nid == nid) {
-            cout << "This NID is already registered.\n";
+    for(auto &acc:Account_vector)
+    {
+        if (acc.nid == nid)
+        {
+            Msg("This NID is already registered.", "error");
             return false;
         }
     }
@@ -115,18 +120,22 @@ void loadAccounts(const string &filename)
     file.close();
 }
 /*load accounts history from file*/
-void loadHistory(const string &filename) {
+void loadHistory(const string &filename)
+{
     ifstream file(filename);
     if (!file.is_open()) return;
     string line;
-    while (getline(file, line)) {
+    while (getline(file, line))
+    {
         if(line.empty()) continue;
         stringstream ss(line);
         string nid;
         double amount;
         ss >> nid >> amount;
-        for (auto &acc : Account_vector) {
-            if (acc.nid == nid) {
+        for (auto &acc : Account_vector)
+        {
+            if (acc.nid == nid)
+            {
                 acc.history.push_back(amount);
                 break;
             }
@@ -141,7 +150,7 @@ void saveAccounts(const string &filename)
     ofstream file(filename, ios::trunc);
     if (!file.is_open())
     {
-        cout << "Error saving account data!\n";
+        Msg("Error saving account data!", "warning");
         return;
     }
     for (auto &acc : Account_vector)
@@ -162,27 +171,26 @@ void AccountHolder::collect_info()
 {
     while (true)
     {
-        cout << "Name: ";
+        Msg("Name","prompt");
         getline(cin >> ws, name);
         if (check_name_validity(name)) break;
-        else cout << "Invalid name. Please try again.\n";
+        else Msg("Invalid name. Try again.", "error");
     }
 
     while (true)
     {
-        cout << "Password: ";
+        Msg("Password","prompt");
         read_password(pass);
         if (check_pass_validity(pass)) break;
-        else cout << "Please try again.\n";
     }
 
     while (true)
     {
-        cout << "Retype Password: ";
+        Msg("Retype Password","prompt");
         read_password(conf_pass);
         if (pass != conf_pass)
         {
-            cout << "Passwords don't match! Type again.\n";
+            Msg("Passwords don't match! Type again.", "error");
         }
         else
         {
@@ -192,121 +200,151 @@ void AccountHolder::collect_info()
     }
 
 
-    while(true){
-         cout<<"NID Number: ";
-         cin>>nid;
-         if(check_nid_validity(nid))break;
-         else cout<<"Please Try Again.";
+    while(true)
+    {
+        Msg("NID Number","prompt");
+        cin>>nid;
+        if(check_nid_validity(nid))break;
+
 
     }
     Account_vector.push_back({name, nid, pass, deposit});
     saveAccounts("customer.txt");
-    cout<<"Congrats! You have successfully signed up!";
+    Msg("Congrats! You have successfully signed up!","success");
     go_back();
     return;
 }
-//Construtor for sign-in
-//==================================//
-//              SADIK               //
-//===================================//
-AccountHolder::AccountHolder(int index){
 
-  cout<<"Welcome Back "<<Account_vector[index].name<<"!";
-  //Account holder Dashboard will be created using menu function
-  //Following operations will be done in this section:
-  //1. Balance Enquiry (just print Account_vector[index].deposit)
-  //2. Request Deposit ( call rashed er banano function )
-  //3. Request Withdraw ( call rashed er function)
-  //4. Show Account History ( output the content of the vector Account_vector[index].history)
-  //5. Complain Box
-  //6. Go Back (call go_back() )
-    while (true) {
-        vector<string> options = {
+
+
+//Constructor for sign-in
+AccountHolder::AccountHolder(int index, string nid)
+{
+    Employee emp(100);
+    while (true)
+    {
+        vector<string> options =
+        {
             "Balance Enquiry",
             "Deposit Money",
             "Withdraw Money",
             "Transaction History",
             "Complain Box",
-            "Go Back"
+            "Sign Out"
         };
 
         int choice = menu(options, "ACCOUNT HOLDER DASHBOARD");
-        switch (choice) {
-            case 0: // Balance enquiry
-                cout << "Your Current Balance: " << Account_vector[index].deposit << "\n";
-                go_back();
-                break;
+        switch (choice)
+        {
+        case 0:
+         {
+            ostringstream oss;
+            oss<<fixed <<setprecision(2)<< Account_vector[index].deposit;
+            Msg("Your Current Balance: " + oss.str(), "info");
+            go_back();
+            break;
+         }
+        case 1:
+        {
+            double amount;
+            Msg("Enter amount to deposit", "prompt");
+            cin >> amount;
+            emp.deposit_request(index, amount);
 
-            case 1: { // Deposit
-                double amount;
-                cout << "Enter amount to deposit: ";
-                cin >> amount;
-                deposit_request(index, amount);
-                go_back();
-                break;
-            }
-
-            case 2: { // Withdraw
-                double amount;
-                cout << "Enter amount to withdraw: ";
-                cin >> amount;
-                withdraw_request(index, amount);
-                go_back();
-                break;
-            }
-
-            case 3: // Transaction History
-                cout << "Transaction History:\n";
-                for (double t : Account_vector[index].history) {
-                    if (t >= 0) cout << "+";
-                    cout << t << "\n";
-                }
-                go_back();
-                break;
-
-            case 4: // Complain Box
-                complainBox();
-                break;
-
-            case 5: // Go Back
-                return;
+            go_back();
+            break;
         }
+
+        case 2:
+        {
+            double amount;
+            Msg("Enter amount to withdraw", "prompt");
+            cin >> amount;
+            emp.withdraw_request(index, amount);
+            go_back();
+            break;
+        }
+
+        case 3:
+        {
+            subHeader("Transaction History",RED, 60);
+            cout << BOLD << YELLOW
+                 << "+----------------+------------------------------+\n"
+                 << "|      Status    |           Amount             |\n"
+                 << "+----------------+------------------------------+\n" << RESET;
+
+
+            for (double t : Account_vector[index].history)
+            {
+                string type = (t >= 0 ? "Deposit" : "Withdrawal");
+
+                string color = (t >= 0 ? GREEN : RED);
+
+                cout << "| " << setw(14) << left << type
+                     << " | " << color << setw(28) << left << fixed << setprecision(2) << fabs(t) << RESET << " |\n";
+            }
+
+            cout << BOLD << YELLOW
+                 << "+----------------+------------------------------+\n" << RESET;
+
+
+
+            go_back();
+            break;
+        }
+
+        case 4:
+            complainBox();
+            break;
+
+        case 5:
+            return;
+        }
+
     }
-  cout<<"Account holder dashboard...TODO by SADIK.";
+
 
 
 }
 /*Account Holder Info*/
+
 void AccountHolder::accntHolderInfo()
 {
     clear_screen();
-    cout << "================================ " << CYAN << "ACCOUNT HOLDERS INFO" << RESET << " ================================\n";
-    cout << "+----------------------------------+------------------+------------------+-------------+\n";
+    header("ACCOUNT HOLDERS INFO", CYAN, 100);
+    cout << "+----------------------------------+------------------+------------------+--------------------------------+\n";
     cout << "| " << RED << "Name" << RESET
          << "                             | " << RED << "NID" << RESET
          << "              | " << RED << "Password" << RESET
-         << "         | " << RED << "Deposit" << RESET << "     |\n";
-    cout << "+----------------------------------+------------------+------------------+-------------+\n";
+         << "         | " << RED << "Deposit" << RESET << "                        |\n";
+    cout << "+----------------------------------+------------------+------------------+--------------------------------+\n";
 
     for (auto &acc : Account_vector)
     {
         string pass = acc.password;
         Encryption::encrypt(pass);
+
         cout << "| " << setw(28) << left << acc.name
              << "     | " << setw(16) << left << acc.nid
              << " | " << setw(16) << left << pass
-             << " | " << setw(11) << left << acc.deposit << " |\n";
+             << " | " << setw(30) << right << fixed << setprecision(2) << acc.deposit << " |\n";
     }
-    cout << "+----------------------------------+------------------+------------------+-------------+\n";
+
+    cout << "+----------------------------------+------------------+------------------+--------------------------------+\n";
     go_back();
     return;
 }
+
+
 /*save account history into file*/
-void saveHistory(const string &filename) {
+void saveHistory(const string &filename)
+{
     ofstream file(filename, ios::trunc);
     if (!file.is_open()) return;
-    for (auto &acc : Account_vector) {
-        for (double t : acc.history) {
+    for (auto &acc : Account_vector)
+    {
+        for (double t : acc.history)
+        {
             file << acc.nid << " " << t << "\n";
         }
     }
@@ -316,6 +354,10 @@ void saveHistory(const string &filename) {
 /*---------------------------------
         Employee Section
 ----------------------------------*/
+Employee::Employee(int)
+{
+//Empty constructor for account holder to use
+}
 
 /* Load employees */
 void loadEmployees(const string &filename)
@@ -345,7 +387,7 @@ void saveEmployees(const string &filename)
     ofstream file(filename, ios::trunc);
     if (!file.is_open())
     {
-        cout << "Error saving employee data!\n";
+        Msg("Error saving employee data!","warning");
         return;
     }
     for (auto &emp : Employee_vector)
@@ -360,27 +402,26 @@ void Employee::collect_info()
 {
     while (true)
     {
-        cout << "Name: ";
+        Msg("Name","prompt");
         getline(cin >> ws, name);
         if (check_name_validity(name)) break;
-        else cout << "Invalid name. Please try again.\n";
+        else Msg("Invalid name. Try again.", "error");
     }
 
     while (true)
     {
-        cout << "Password: ";
+        Msg("Password","prompt");
         read_password(password);
         if (check_pass_validity(password)) break;
-        else cout << "Invalid Password. Please try again.\n";
     }
 
     while (true)
     {
-        cout << "Retype Password: ";
+        Msg("Retype Password","prompt");
         read_password(conf_pass);
         if (password != conf_pass)
         {
-            cout << "Passwords don't match! Type again.\n";
+            Msg("Passwords don't match! Type again.", "error");
         }
         else
         {
@@ -389,9 +430,10 @@ void Employee::collect_info()
         }
     }
 
+
     Employee_vector.push_back({employee_id, name, password});
     saveEmployees("employee.txt");
-    cout<<"Congrats! You signed up successfully as our Employee!\n";
+    Msg("Congrats! You signed up successfully as our Employee!","success");
     cout<<"Your ID: "<<CYAN<<Employee:: employee_id<<RESET;
     go_back();
     return;
@@ -406,19 +448,18 @@ Employee::Employee()
 }
 
 //Constructor for SignIn
-Employee::Employee(string name, string password){
-  this->name=name;
-  this->password=password;
+Employee::Employee(string name, string password)
+{
+    this->name=name;
+    this->password=password;
 
 }
 
-//========================//
-//         RASHED         //
-//========================//
 /*Employee SignIn*/
-void Employee::employee_dashboard(int id){
-  clear_screen();
-  cout<<"Welcome "<<name;
+void Employee::employee_dashboard(int id)
+{
+    clear_screen();
+
     while (true)
     {
         vector<string> options =
@@ -426,11 +467,12 @@ void Employee::employee_dashboard(int id){
             "View Account Holder Info",
             "Search Account",
             "Remove Account Holder",
-            "Account Management",
+            "Transaction History",
             "Complaints",
             "Sign Out"
         };
         int employee_option = menu(options, "EMPLOYEE DASHBOARD");
+
         switch (employee_option)
         {
         case 0:
@@ -443,7 +485,7 @@ void Employee::employee_dashboard(int id){
             remove_account();
             break;
         case 3:
-            account_management();
+            transaction_history();
             break;
         case 4:
             complainBox();
@@ -457,9 +499,9 @@ void Employee::employee_dashboard(int id){
 }
 void Employee::remove_account()
 {
-        clear_screen();
+    clear_screen();
     string nrid;
-    cout << "Enter Account NID: ";
+    Msg("Enter Account NID","prompt");
     cin >> nrid;
 
     auto it = lower_bound(Account_vector.begin(), Account_vector.end(), nrid,
@@ -470,12 +512,12 @@ void Employee::remove_account()
 
     if (it != Account_vector.end() && it->nid == nrid)
     {
-        cout << "Removing Account Holder: " << it->name << " (ID: " << it->nid << ")\n";
+        Msg("Removing Account Holder: " + it->name + " (ID: " + it->nid + ")", "success");
         Account_vector.erase(it);
     }
     else
     {
-        cout << "Account with NID " << nrid << " not found!\n";
+        Msg("Account with NID " + nrid + " not found!", "error");
     }
 
     go_back();
@@ -483,35 +525,35 @@ void Employee::remove_account()
 }
 void Employee::search_account()
 {
-        clear_screen();
+    clear_screen();
     string sid;
-    cout<<"Enter Account ID: ";
+    Msg("Enter Account ID","prompt");
     cin>>sid;
 
-        auto it = lower_bound(Account_vector.begin(), Account_vector.end(), sid,
+    auto it = lower_bound(Account_vector.begin(), Account_vector.end(), sid,
                           [](const AccountData &acc, string value)
     {
         return acc.nid < value;
     });
-        if (it != Account_vector.end() && it->nid == sid)
+    if (it != Account_vector.end() && it->nid == sid)
     {
-        cout << "Account: " << it->name << " (ID: " << it->nid << ")<<Balance: "<<it->deposit<<"\n";
+        Msg("Account: " + it->name + " (ID: " + it->nid + ") << Balance: " + to_string(it->deposit), "info");
     }
     else
     {
-        cout << "Account with ID " << sid << " not found!\n";
+        Msg("Account with ID " + sid + " not found!", "error");
     }
 
     go_back();
     return;
 }
-void Employee::account_management()
+void Employee::transaction_history()
 {
-          clear_screen();
-    cout<<"Account Management"<<endl;
+    clear_screen();
+    header("Transaction History", MAGENTA, 60);
 
     string nid;
-    cout << "Enter Account NID: ";
+    Msg("Enter Account NID","prompt");
     cin >> nid;
 
     int index = -1;
@@ -526,83 +568,78 @@ void Employee::account_management()
 
     if (index == -1)
     {
-        cout << "Account not found.\n";
+        Msg("Account not found.","error");
         go_back();
         return;
     }
     double amount;
-        while (true)
+
+    subHeader("Transaction History for NID: " + nid, RESET, 60);
+    cout << BOLD << YELLOW
+         << "+------------------+------------------------------+\n"
+         << "|      Status      |           Amount             |\n"
+         << "+------------------+------------------------------+\n" << RESET;
+
+
+    for (double t : Account_vector[index].history)
     {
-        clear_screen();
-        vector<string> options =
-        {
-            "Account Withdrawal",
-            "Account Deposit",
-            "Transaction History",
-            "Go Back"
-        };
-        int employee_option = menu(options, "ACCOUNT MANAGEMENT");
-        switch (employee_option)
-        {
-        case 0:
-            cout<<endl<<"Enter amount: ";
-            cin>>amount;
-            withdraw_request(index,amount);
-            go_back();
-            break;
-        case 1:
-            cout<<endl<<"Enter amount: ";
-            cin>>amount;
-            deposit_request(index,amount);
-            go_back();
-            break;
-        case 2:
-            cout << "Transaction History:\n";
-            for (double t : Account_vector[index].history)
-            {
-                cout<<nid<<": ";
-                if (t >= 0) cout << "+";
-                cout << t << "\n";
-            }
-            go_back();
-        break;
-        case 3:
-            return;
-        }
+        string type = (t >= 0 ? "Deposit" : "Withdrawal");
+
+        string color = (t >= 0 ? GREEN : RED);
+
+        cout << "| " << setw(14) << left << type
+             << "   | " << color << setw(28) << left << fixed << setprecision(2) << fabs(t) << RESET << " |\n";
     }
+
+    cout << BOLD << YELLOW
+         << "+------------------+------------------------------+\n" << RESET;
+
+
+
+    go_back();
+
 }
-void deposit_request(int index, double amount)
+void Employee::deposit_request(int index, double amount)
 {
     if (amount <= 0)
     {
-        cout << "Invalid deposit amount.\n";
+        Msg("Invalid deposit amount","error");
         return;
     }
 
     Account_vector[index].deposit += amount;
     Account_vector[index].history.push_back(amount); // Positive for deposit
-    cout << "Successfully deposited " << amount << ". New balance: " << Account_vector[index].deposit << "\n";
+    ostringstream oss;
+    oss <<fixed << std::setprecision(2);
+    oss << amount << ". New balance: " << Account_vector[index].deposit;
+
+    Msg("Successfully deposited " + oss.str(), "success");
 
     saveAccounts("customer.txt");
     saveHistory("history.txt");
 }
-void withdraw_request(int index, double amount)
+void Employee:: withdraw_request(int index, double amount)
 {
     if (amount <= 0)
     {
-        cout << "Invalid withdrawal amount.\n";
+        Msg("Invalid withdrawal amount.","error");
         return;
     }
 
     if (Account_vector[index].deposit < amount)
     {
-        cout << "Insufficient balance.\n";
+        Msg("Insufficient balance.","warning");
         return;
     }
 
     Account_vector[index].deposit -= amount;
     Account_vector[index].history.push_back(-amount); // Negative for withdrawal
-    cout << "Successfully withdrew " << amount << ". New balance: " << Account_vector[index].deposit << "\n";
+    ostringstream oss;
+    oss << fixed << std::setprecision(2);
+    oss << amount << ". New balance: " << Account_vector[index].deposit;
+
+    Msg("Successfully dwithdrew " + oss.str(), "success");
+
 
     saveAccounts("customer.txt");
     saveHistory("history.txt");
@@ -673,25 +710,31 @@ void SignIn::signin_employee()
 {
     int login_id;
     string login_pass;
-    cout<<"Enter Your ID: ";
+    Msg("Enter Your ID","prompt");
     cin>>login_id;
 
-    cout<<"Enter Password: ";
+    Msg("Enter Password","prompt");
     read_password(login_pass);
     auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), login_id,
                           [](const EmployeeData &emp, int value)
     {
         return emp.id < value;
     });
-    if(it==Employee_vector.end()){
-        cout<<"Sorry Wrong Credentials.";
-    }else{
+    if(it==Employee_vector.end())
+    {
+        Msg("Sorry Wrong Credentials.","error");
+    }
+    else
+    {
         Encryption::encrypt(login_pass);
-        if(it->password!=login_pass){
-            cout<<"Sorry Wrong Credentials.";
-        }else{
-          Employee temp(it->name, it->password);
-          temp.employee_dashboard(it->id);
+        if(it->password!=login_pass)
+        {
+            Msg("Sorry Wrong Credentials.","error");
+        }
+        else
+        {
+            Employee temp(it->name, it->password);
+            temp.employee_dashboard(it->id);
         }
     }
 
@@ -700,26 +743,34 @@ void SignIn::signin_employee()
 void SignIn::signin_general()
 {
     string name,nid,password;
-    cout<<"Enter Your NID: ";
+    Msg("Enter Your NID","prompt");
     cin>>nid;
-    cout<<"Enter Password: ";
+    Msg("Enter Password","prompt");
     read_password(password);
 
     int index=-1;
-    for(int i=0; i<Account_vector.size(); i++){
-        if(Account_vector[i].nid==nid){
+    for(int i=0; i<Account_vector.size(); i++)
+    {
+        if(Account_vector[i].nid==nid)
+        {
             index=i;
             break;
         }
     }
-    if(index==-1){
-        cout<<"Sorry Wrong Credentials.";
-    }else{
+    if(index==-1)
+    {
+        Msg("Sorry Wrong Credentials.","error");
+    }
+    else
+    {
         Encryption::encrypt(password);
-        if(Account_vector[index].password!=password){
-            cout<<"Sorry Wrong Credentials.";
-        }else{
-          AccountHolder temp(index);
+        if(Account_vector[index].password!=password)
+        {
+            Msg("Sorry Wrong Credentials.","error");
+        }
+        else
+        {
+            AccountHolder temp(index,Account_vector[index].nid);
         }
     }
 
@@ -738,7 +789,7 @@ Contact::Contact()
 About::About()
 {
     clear_screen();
-    cout << "5 random lads and 2 ladies from KUET CSE\n";
+    Msg("5 random lads and 2 ladies from KUET CSE","info");
     go_back();
 
 }
@@ -746,19 +797,21 @@ About::About()
 /*-------------------------
         Admin Panel
 --------------------------*/
-bool Admin::login(int pin){
-  return (pin == ADMIN_PIN);
+bool Admin::login(int pin)
+{
+    return (pin == ADMIN_PIN);
 }
 
 Admin::Admin()
 {
     string admin_pass;
-    cout<<"Enter Pin: ";
+    Msg("Enter Pin","prompt");
     read_password(admin_pass);
 
     int admin_pin= stoi(admin_pass);
-    if(!login(admin_pin)){
-        cout<<"Password incorrect. Access Denied.";
+    if(!login(admin_pin))
+    {
+        Msg("Password Incorrect. Acess deined.","error");
         go_back();
         return;
     }
@@ -823,7 +876,7 @@ void Admin::manageEmployees()
 void Admin::employeeInfo()
 {
     clear_screen();
-    cout << "========================== " << CYAN << "EMPLOYEE INFO" << RESET << " ==========================\n";
+    header("EMPLOYEE INFO", YELLOW, 100);
     cout << "+--------------+------------------------------+----------------------+\n";
     cout << "| " << RED << "ID" << RESET
          << "           | " << RED << "Name" << RESET
@@ -847,31 +900,33 @@ void Admin::searchEmployee()
 {
     clear_screen();
     int sid;
-    cout<<"Enter employee ID: ";
-    cin>>sid;
+    Msg("Enter employee ID", "prompt");
+    cin >> sid;
 
-        auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), sid,
+    auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), sid,
                           [](const EmployeeData &emp, int value)
     {
         return emp.id < value;
     });
-        if (it != Employee_vector.end() && it->id == sid)
+
+    if (it != Employee_vector.end() && it->id == sid)
     {
-        cout << "Employee: " << it->name << " (ID: " << it->id << ")\n";
+        Msg("Employee: " + it->name + " (ID: " + to_string(it->id) + ")", "info");
     }
     else
     {
-        cout << "Employee with ID " << sid << " not found!\n";
+        Msg("Employee with ID " + to_string(sid) + " not found!", "error");
     }
 
     go_back();
     return;
 }
+
 void Admin::removeEmployee()
 {
     clear_screen();
     int rid;
-    cout << "Enter Employee ID: ";
+    Msg("Enter Employee ID", "prompt");
     cin >> rid;
 
     auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), rid,
@@ -882,40 +937,40 @@ void Admin::removeEmployee()
 
     if (it != Employee_vector.end() && it->id == rid)
     {
-        cout << "Removing Employee: " << it->name << " (ID: " << it->id << ")\n";
+        Msg("Removing Employee: " + it->name + " (ID: " + to_string(it->id) + ")", "warning");
         Employee_vector.erase(it);
         Employee::employee_count = Employee_vector.size();
+        Msg("Employee removed successfully!", "success");
     }
     else
     {
-        cout << "Employee with ID " << rid << " not found!\n";
+        Msg("Employee with ID " + to_string(rid) + " not found!", "error");
     }
 
     go_back();
     return;
 }
-//=========================//
-//         TAHMINA         //
-//=========================//
+
+
 void Admin::cashManagement()
 {
     clear_screen();
-    cout << "==================================== " << CYAN << "CASH MANAGEMENT" << RESET << " =======================================\n";
+    header("CASH MANAGEMENT", YELLOW, 100);
     double total_Deposit = 0.0;
     double total_Withdraw = 0.0;
 
-    cout << "+----------------------+----------------------+----------------------+----------------------+\n";
+    cout << "+----------------------+----------------------+----------------------+-----------------------------+\n";
     cout << "| " << RED << "NID" << RESET
          << "                  | " << RED << "Deposited" << RESET
          << "            | " << RED << "Withdrawn" << RESET
-         << "            | " << RED << "Net Balance" << RESET << "          |\n";
-    cout << "+----------------------+----------------------+----------------------+----------------------+\n";
+         << "            | " << RED << "Net Balance" << RESET << "                 |\n";
+    cout << "+----------------------+----------------------+----------------------+-----------------------------+\n";
 
     for (size_t i = 0; i < Account_vector.size(); i++)
     {
         double deposit = 0.0, withdraw = 0.0;
 
-        // calculate per-account deposits & withdrawals
+        
         for (size_t j = 0; j < Account_vector[i].history.size(); j++)
         {
             if (Account_vector[i].history[j] > 0)
@@ -924,26 +979,28 @@ void Admin::cashManagement()
                 withdraw += (-Account_vector[i].history[j]);
         }
 
-        // update global totals
+       
         total_Deposit += deposit;
         total_Withdraw += withdraw;
 
-        // print account line with larger spacing
+      
         cout << "| " << setw(20) << left << Account_vector[i].nid
-             << " | " << setw(20) << left << deposit
-             << " | " << setw(20) << left << withdraw
-             << " | " << setw(20) << left << (deposit - withdraw)
+             << " | " << setw(20) << left << fixed << setprecision(2) << deposit
+             << " | " << setw(20) << left << fixed << setprecision(2) << withdraw
+             << " | " << setw(27) << left << fixed << setprecision(2) << (deposit - withdraw)
              << " |\n";
     }
 
-    cout << "+----------------------+----------------------+----------------------+----------------------+\n";
-    cout << "Total Deposited : " << total_Deposit << "\n";
-    cout << "Total Withdrawn : " << total_Withdraw << "\n";
-    cout << "Net Balance in Bank : " << (total_Deposit - total_Withdraw) << "\n";
+    cout << "+----------------------+----------------------+----------------------+-----------------------------+\n";
+
+    Msg("Total Deposited : " + to_string(total_Deposit), "info");
+    Msg("Total Withdrawn : " + to_string(total_Withdraw), "info");
+    Msg("Net Balance in Bank : " + to_string(total_Deposit - total_Withdraw), "info");
 
     go_back();
     return;
 }
+
 
 void complainBox()
 {
@@ -1001,6 +1058,5 @@ int main()
     saveHistory("history.txt");
     return 0;
 }
-
 
 
