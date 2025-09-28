@@ -133,3 +133,73 @@ int menu(const vector<string> &menu_options, const string &caption) {
         else if (key == 13) return choice; // Enter
     }
 }
+
+// -- Styled Message --
+// call Msg("your message", "message nature")
+// Type "error" to show error in inpu
+//      "prompt" to show input propmt
+//      "success" to say something has been done successfully
+//      "warning" to show warning
+//      "info" to show info in the placeholder "message nature".
+
+void Msg(const string &msg, const string &msgNature)
+{
+    if (msgNature == "prompt" || msgNature == "Prompt")
+        cout << BOLD << CYAN << msg << ": " << RESET;
+    else
+    {
+        string fullMsg;
+        if (msgNature == "error" || msgNature == "Error")
+            fullMsg = " XXX " + msg;
+        else if (msgNature == "success" || msgNature == "Success")
+            fullMsg = "     " + msg + "   ";
+        else if (msgNature == "warning" || msgNature == "Warning")
+            fullMsg = " !!! " + msg;
+        else if (msgNature == "info" || msgNature == "Info")
+            fullMsg = " >>> " + msg;
+        else
+            fullMsg = "     " + msg + "   ";
+
+        int boxWidth = (int)(fullMsg.size() + 4);
+        int totalPadding = boxWidth - fullMsg.size() - 2;
+        int leftPadding = totalPadding / 2;
+        int rightPadding = totalPadding - leftPadding;
+
+        cout << string(boxWidth+2, '-') << "\n"<< "|"<< string(leftPadding, ' ');
+
+        if (msgNature == "error" || msgNature == "Error")
+            cout << RED << fullMsg << RESET;
+        else if (msgNature == "success" || msgNature == "Success")
+            cout << GREEN << fullMsg << RESET;
+        else if (msgNature == "warning" || msgNature == "Warning")
+            cout << YELLOW << fullMsg << RESET;
+        else if (msgNature == "info" || msgNature == "Info")
+            cout << MAGENTA << fullMsg << RESET;
+        else
+            cout << fullMsg;
+
+        cout << string(rightPadding+2, ' ') << "|\n"<< string(boxWidth+2, '-') << "\n";
+    }
+}
+
+// -- Styled Header --
+// call header("Header", color, width)
+void header(const string &msg, string color, int width)
+{
+    int totalLen = msg.size() + 6;
+    if(totalLen > width) width = totalLen + 4;
+    int side = (width - totalLen) / 2;
+    cout << "\n" << color << string(side, '=') << BOLD << "== " <<RESET<< msg<<color<<BOLD << " ==" << RESET << color << string(width - totalLen - side, '=') << RESET << "\n\n";
+}
+
+// -- Styled Sub-header --
+// call subHeader("Header", color, width)
+void subHeader(const string &msg, string color, int width)
+{
+    cout<<endl;
+    int side = (width - msg.size() - 4) / 2;
+    if(side < 0) side = 0;
+    cout << color << string(side, '-')
+         << BOLD << " " << msg << " " << RESET
+         << color << string(width - msg.size() - 4 - side, '-') << RESET << "\n\n";
+}
