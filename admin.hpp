@@ -7,8 +7,7 @@
 using namespace std;
 void main_menu();
 void complainBox();
-void deposit_request(int,double);
-void withdraw_request(int,double);
+
 
 
 class AccountHolder{
@@ -17,11 +16,9 @@ class AccountHolder{
 
    public:
        AccountHolder(double);
-       AccountHolder(int);
+       AccountHolder(int,string);
        static void accntHolderInfo();
        void collect_info();
-
-
 
 };
 
@@ -52,12 +49,14 @@ public:
 
     Employee();
     Employee(string,string);
+    Employee(int); //Dummy constructor for account holder to use
     void collect_info();
     void employee_dashboard(int);
     void remove_account();
-    void account_management();
+    void transaction_history();
     void search_account();
-
+    void withdraw_request(int,double);
+    void deposit_request(int,double);
 
 
 };
