@@ -1,16 +1,25 @@
 #include "tools.hpp"
-#include <iostream>
+#include "admin.hpp"
+#include "employee.hpp"
+#include "general.hpp"
+#include "sign.hpp"
+#include "complaint.hpp"
 #include <conio.h>
-#include <windows.h>
-#include <limits>
 using namespace std;
 
-// -- Color codes
-// cout << COLOR_NAME << ... << RESET
-#define MAX_PASSWORD_SIZE 100
-#define RESET   "\033[0m"
-#define RED     "\033[31m"
-#define CYAN    "\033[36m"
+#ifdef _WIN32
+    BOOL WINAPI ConsoleHandler(DWORD signal) {
+        if (signal == CTRL_CLOSE_EVENT) {
+            save_accounts();
+            save_employees();
+            save_histories();
+            save_rates();
+            save_complaints();
+            Sleep(1000);
+        }
+        return TRUE;
+    }
+#endif
 
 // -- clear_screen --
 // write clear_screen() when u need to flush everything out of screen
@@ -21,9 +30,8 @@ void clear_screen() {
 // -- go_back --
 // write go_back() when u need to return to the previous menu
 void go_back(){
-    cout<<CYAN<<"\nPress ANY KEY to go back\n"<<RESET;
-    cin.ignore();
-    cin.get();
+    cout << CYAN << "\nPress ANY KEY to go back\n" << RESET;
+    _getch();
 }
 
 // -- read_password --
@@ -52,10 +60,8 @@ void read_password(string &password) {
 // -- Encryption --
 // Write Encryption::encrypt (password) to encrypt it
 void Encryption::encrypt(string &password) {
-    const uint8_t k = KEY;
-    for (auto &c : password) {
-        c = static_cast<char>(static_cast<uint8_t>(c) ^ k);
-    }
+    const int k = KEY;
+    for (auto &c : password) c ^= k;
 }
 
 // -- Menu --
@@ -79,20 +85,14 @@ void Menu(int choice, int scWidth, int scHeight,
     for (int i = 0; i < no_of_options; i++) {
         for (int j = 0; j < startCol; j++) cout << " ";
 
-        if (menu[i] == "Exit" || menu[i] == "exit") {
+        string temp;
+        for (char c : menu[i]) temp += tolower(c);
+
+        if (temp == "exit" || temp == "sign out" || temp == "go back") {
             if (i == choice) cout << ">> ";
             else cout << "   ";
 
             cout << RED << "Exit" << RESET;
-
-            if (i == choice) cout << " <<";
-            cout << "\n";
-        }else if(menu[i]=="sign out" || menu[i]=="Sign Out" || menu[i]=="Sign out"){
-
-           if (i == choice) cout << ">> ";
-            else cout << "   ";
-
-            cout << RED << "Sign Out" << RESET;
 
             if (i == choice) cout << " <<";
             cout << "\n";
@@ -142,23 +142,15 @@ int menu(const vector<string> &menu_options, const string &caption) {
 //      "warning" to show warning
 //      "info" to show info in the placeholder "message nature".
 
-void Msg(const string &msg, const string &msgNature)
-{
-    if (msgNature == "prompt" || msgNature == "Prompt")
-        cout << BOLD << CYAN << msg << ": " << RESET;
-    else
-    {
+void Msg(const string &msg, const string &msgNature) {
+    if (msgNature == "prompt" || msgNature == "Prompt") cout << BOLD << CYAN << msg << ": " << RESET;
+    else {
         string fullMsg;
-        if (msgNature == "error" || msgNature == "Error")
-            fullMsg = " XXX " + msg;
-        else if (msgNature == "success" || msgNature == "Success")
-            fullMsg = "     " + msg + "   ";
-        else if (msgNature == "warning" || msgNature == "Warning")
-            fullMsg = " !!! " + msg;
-        else if (msgNature == "info" || msgNature == "Info")
-            fullMsg = " >>> " + msg;
-        else
-            fullMsg = "     " + msg + "   ";
+        if (msgNature == "error" || msgNature == "Error") fullMsg = " XXX " + msg;
+        else if (msgNature == "success" || msgNature == "Success") fullMsg = "     " + msg + "   ";
+        else if (msgNature == "warning" || msgNature == "Warning") fullMsg = " !!! " + msg;
+        else if (msgNature == "info" || msgNature == "Info") fullMsg = " >>> " + msg;
+        else fullMsg = "     " + msg + "   ";
 
         int boxWidth = (int)(fullMsg.size() + 4);
         int totalPadding = boxWidth - fullMsg.size() - 2;
@@ -167,18 +159,13 @@ void Msg(const string &msg, const string &msgNature)
 
         cout << string(boxWidth+2, '-') << "\n"<< "|"<< string(leftPadding, ' ');
 
-        if (msgNature == "error" || msgNature == "Error")
-            cout << RED << fullMsg << RESET;
-        else if (msgNature == "success" || msgNature == "Success")
-            cout << GREEN << fullMsg << RESET;
-        else if (msgNature == "warning" || msgNature == "Warning")
-            cout << YELLOW << fullMsg << RESET;
-        else if (msgNature == "info" || msgNature == "Info")
-            cout << MAGENTA << fullMsg << RESET;
-        else
-            cout << fullMsg;
+        if (msgNature == "error" || msgNature == "Error") cout << RED << fullMsg << RESET;
+        else if (msgNature == "success" || msgNature == "Success") cout << GREEN << fullMsg << RESET;
+        else if (msgNature == "warning" || msgNature == "Warning") cout << YELLOW << fullMsg << RESET;
+        else if (msgNature == "info" || msgNature == "Info") cout << MAGENTA << fullMsg << RESET;
+        else cout << fullMsg;
 
-        cout << string(rightPadding+2, ' ') << "|\n"<< string(boxWidth+2, '-') << "\n";
+        cout << string(rightPadding + 2, ' ') << "|\n"<< string(boxWidth + 2, '-') << "\n";
     }
 }
 
@@ -203,3 +190,87 @@ void subHeader(const string &msg, string color, int width)
          << BOLD << " " << msg << " " << RESET
          << color << string(width - msg.size() - 4 - side, '-') << RESET << "\n\n";
 }
+
+// prints content of entire file
+void read_entire_file(const string &s) {
+    ifstream in(s);
+    if (!in) {
+        Msg("Something went wrong", "error");
+        return;
+    }
+    cout << in.rdbuf(); // read buffer
+}
+
+/* Name validity */
+bool check_name_validity(const string &n)
+{
+    if (n.empty()) return false;
+    if (!isupper(n[0])) return false;
+
+    for (char c : n)
+    {
+        if (c == ' ') continue;
+        if (!isalpha(c)) return false;
+    }
+    return true;
+}
+
+/* Password validity */
+// Requirements
+// at least 1 digit
+// at least 1 uppercase letter
+// at least 1 special character
+bool check_pass_validity(string p) {
+    if (p.length() < 8) {
+        Msg("Password must be at least 8 characters long.","error");
+        return false;
+    }
+
+    bool sp_char = false, upper = false, number = false;
+    for (int i = 0; i < (int)p.length(); i++) {
+        if (isdigit(p[i])) number = true;
+        if (isupper(p[i])) upper = true;
+        if (!isdigit(p[i]) &&(p[i] < 65 || (p[i] > 90 && p[i] < 97) || p[i] > 122)) sp_char = true;
+    }
+
+    if (!number) {
+        Msg("Password must contain at least 1 digit.","error");
+        return false;
+    }
+    if (!upper) {
+        Msg("Password must contain at least 1 uppercase letter.", "error");
+        return false;
+    }
+    if (!sp_char){
+        Msg("Password must contain at least 1 special character.","error");
+        return false;
+    }
+    return true;
+}
+
+/*NID validity*/
+// NID length exactly 10
+// NID must not have any characters
+bool check_nid_validity(string nid) {
+    if(nid.length() != 10) {
+        Msg("NID must be exactly 10 digits long", "error");
+        return false;
+    }
+
+    for(char &c : nid) {
+        if(!isdigit(c)) {
+            Msg("NID must contain digits only.", "error");
+            return false;
+        }
+    }
+
+    for(auto &acc:Account_vector) {
+        if (acc.nid == nid) {
+            Msg("This NID is already registered.", "error");
+            return false;
+        }
+    }
+
+    return true;
+}
+
