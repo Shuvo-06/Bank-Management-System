@@ -1,117 +1,25 @@
-#ifndef ADMIN_H
-#define ADMIN_H
-#define ADMIN_PIN 1098765486
-
+#ifndef ADMIN_HPP
+#define ADMIN_HPP
 
 #include <bits/stdc++.h>
+#include "employee.hpp"
 using namespace std;
-void main_menu();
-void complainBox();
+
+#define ADMIN_PIN 1098765486
+#define STARTING_ID 2307001
 
 
 
-class AccountHolder{
-   string name,nid,pass,conf_pass;
-   double deposit;
-
-   public:
-       AccountHolder(double);
-       AccountHolder(int,string);
-       static void accntHolderInfo();
-       void collect_info();
-
-};
-
-
-
-class Admin
-{
-
-    void manageEmployees();
-    void employeeInfo();
-    void cashManagement();
-    void removeEmployee();
-    void searchEmployee();
-
+class Admin {
 public:
-    bool login(int);
     Admin();
-
+    static void view_employee();
+    static void cashManagement();
+    static void removeEmployee();
+    static void searchEmployee();
+    static void employee_info();
+    static void manageRates();
 };
-
-class Employee {
-
-    string name, password, conf_pass;
-
-public:
-    static int employee_id;
-    static int employee_count;
-
-    Employee();
-    Employee(string,string);
-    Employee(int); //Dummy constructor for account holder to use
-    void collect_info();
-    void employee_dashboard(int);
-    void remove_account();
-    void transaction_history();
-    void search_account();
-    void withdraw_request(int,double);
-    void deposit_request(int,double);
-
-
-};
-
-
-
-class SignUp
-{
-    string name, password, confirm_pass, nid;
-    public:
-    void signup_employee();
-    void signup_general();
-    SignUp();
-
-};
-
-class SignIn
-{
-public:
-    SignIn();
-    void signin_employee();
-    void signin_general();
-};
-
-class Contact
-{
-public:
-    Contact();
-
-};
-
-class About
-{
-public:
-    About();
-};
-
-struct AccountData
-{
-    string name;
-    string nid;
-    string password;
-    double deposit;
-    vector<double> history;
-};
-
-
-
-struct EmployeeData
-{
-    int id;
-    string name, password;
-};
-
-
 
 
 #endif
