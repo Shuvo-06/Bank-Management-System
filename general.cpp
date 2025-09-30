@@ -299,6 +299,7 @@ void AccountHolder::updateCustomer(int index)
                 go_back();
                 break;
 
+            }
             Msg("Enter new password", "prompt");
             string new_pass;
             read_password(new_pass);
@@ -326,7 +327,7 @@ void AccountHolder::updateCustomer(int index)
             break;
         }
 
-        }case 2:
+        case 2:
             return;
         }
     }
