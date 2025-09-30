@@ -1,0 +1,17 @@
+We are a team of Computer Science and Engineering students from KUET, working together to design and implement a Bank Management System (BMS) as part of our academic project. Our goal was not just to complete an assignment, but to explore practical applications of object oriented programming. 
+
+Team Members : 
+----------------------------------------
+|        Name             |   Roll     |
+|-------------------------|------------|
+| Juairia Binte Zaman     |  2307086   |
+| Tahmina Akter           |  2307104   |
+| Sadik Hossain           |  2307105   |
+| Ahmed Morsalin Shuvo    |  2307106   |
+| Sadat ul Islam Britto   |  2307107   |
+| Ashraful Islam          |  2307108   |
+| Rashed Shahriar Pranto  |  2307109   |
+----------------------------------------
+
+
+This project reflects our dedication to teamwork, problem-solving, and applying classroom knowledge to real-world engineering challenges.
