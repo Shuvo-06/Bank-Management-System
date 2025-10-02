@@ -35,6 +35,7 @@ Employee::Employee() {
         if (check_pass_validity(password)) break;
         else {
             if (i == ENTRY_LIMIT) {
+                Msg("Try again later", "error");
                 go_back();
                 return;
             }
@@ -61,7 +62,11 @@ Employee::Employee() {
 
     Employee_vector.push_back({employee_id, name, password});
     Msg("Congrats! You signed up successfully as our Employee!","success");
-    cout<<"Your ID: "<<CYAN<<Employee:: employee_id<<RESET;
+
+    ostringstream oss;
+    oss << "YOUR ID : " << Employee :: employee_id;
+    Msg(oss.str(), "info");
+
     go_back();
     return;
 }
@@ -326,4 +331,3 @@ void Employee::updateEmployee(int id)
         }
     }
 }
-
