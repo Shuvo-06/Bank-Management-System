@@ -88,6 +88,11 @@ void SignIn::signin_general() {
 
     Msg("Enter Your NID", "prompt");
     cin >> nid;
+    if(nid=="0"){
+        Msg("Your Account Has Been Deleted","Warning");
+        go_back();
+        return;
+    }
 
     Msg("Enter Password", "prompt");
     read_password(password);
