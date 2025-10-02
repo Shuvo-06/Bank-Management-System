@@ -8,10 +8,10 @@
 #include "complaint.hpp"
 using namespace std;
 
-
 /*-----------------------------------------------------------------------
-            Functions to Read From and Save To  Files
+             Global Functions --> Name, NID and Password Validation
 -------------------------------------------------------------------------*/
+
 vector<AccountData> Account_vector;
 vector<EmployeeData> Employee_vector;
 
@@ -150,6 +150,7 @@ void save_histories() {
     ofstream file("history.txt", ios::trunc);
     if (!file.is_open()) return;
     for (auto &acc : Account_vector) {
+        if(acc.nid=="0") continue;
         for (double t : acc.history) {
             file << acc.nid << " " << t << "\n";
         }
@@ -214,6 +215,7 @@ void save_complaints() {
     }
 
     for (auto &c : Complaints_vector_t) {
+        if(c.nid=="0") continue;
         file << c.nid << "|" << (c.resolved ? "1" : "0") << "|" << c.complain << "\n";
     }
 
