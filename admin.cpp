@@ -136,7 +136,7 @@ void Admin::cashManagement()
     for (int i = 0; i < (int)Account_vector.size(); i++) {
         double deposit = 0.0, withdraw = 0.0;
 
-
+        if(Account_vector[i].nid=="0")continue;
         for (size_t j = 0; j < Account_vector[i].history.size(); j++)
         {
             if (Account_vector[i].history[j] > 0) deposit += Account_vector[i].history[j];
