@@ -273,4 +273,3 @@ bool check_nid_validity(string nid) {
 
     return true;
 }
-
