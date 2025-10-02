@@ -26,7 +26,7 @@ struct EmployeeData {
     string password;
 };
 
-// Forward declare AccountData if you have it in another header
+
 struct AccountData;
 
 
