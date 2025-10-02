@@ -63,7 +63,16 @@ void Admin::searchEmployee()
     string SID;
     Msg("Enter employee ID", "prompt");
     cin >> SID;
-    int sid= stoi(SID);
+
+    int sid;
+    stringstream ss(SID);
+
+    if (!(ss >> sid) || !(ss.eof()))
+    {
+        Msg("Invalid employee ID!", "error");
+        go_back();
+        return;
+    }
 
     auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), sid,
                           [](const EmployeeData &emp, int value)
@@ -82,10 +91,18 @@ void Admin::removeEmployee()
 {
     clear_screen();
     string RID;
-    Msg("Enter Employee ID", "prompt");
+    Msg("Enter employee ID", "prompt");
     cin >> RID;
 
-    int rid =stoi(RID);
+    int rid;
+    stringstream ss(RID);
+
+    if (!(ss >> rid) || !(ss.eof()))
+    {
+        Msg("Invalid employee ID!", "error");
+        go_back();
+        return;
+    }
 
     auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), rid,
                           [](const EmployeeData &emp, int value)
@@ -120,7 +137,7 @@ void Admin::cashManagement()
          << "            | " << RED << "Net Balance" << RESET << "                 |\n";
     cout << "+----------------------+----------------------+----------------------+-----------------------------+\n";
 
-    for (size_t i = 0; i < (int)Account_vector.size(); i++)
+    for (int i = 0; i < (int)Account_vector.size(); i++)
     {
         double deposit = 0.0, withdraw = 0.0;
 
@@ -152,93 +169,99 @@ void Admin::cashManagement()
     go_back();
     return;
 }
+
 void Admin::manageRates()
 {
-    vector<string> options{"Edit Rate", "Add New Currency", "Remove Currency", "Exit"};
-    int op = menu(options, "Exchange Rates");
-
-    switch(op)
+    while (true)
     {
-    case 0:
-    {
-        int choice = menu(Converter::types, "Choose Currency Type : ");
-        Msg("Type new rate", "prompt");
+        vector<string> options{"Edit Rate", "Add New Currency", "Remove Currency", "Exit"};
+        int op = menu(options, "Exchange Rates");
 
-        string input;
-        cin >> input;
-
-        stringstream ss(input);
-        double rate;
-        if (!(ss >> rate) || !(ss.eof()) || rate <= 0)
+        switch(op)
         {
-            Msg("Invalid rate! Must be a positive number.", "error");
+        case 0: // Edit Rate
+        {
+            int choice = menu(Converter::types, "Choose Currency Type : ");
+            Msg("Type new rate", "prompt");
+
+            string input;
+            cin >> input;
+
+            stringstream ss(input);
+            double rate;
+            if (!(ss >> rate) || !(ss.eof()) || rate <= 0)
+            {
+                Msg("Invalid rate! Must be a positive number.", "error");
+                go_back();
+                break;
+            }
+
+            Converter::rates[choice] = rate;
+            Msg("Rate updated successfully!", "success");
             go_back();
-            return;
+            break;
         }
-
-        Converter::rates[choice] = rate;
-        Msg("Rate updated successfully!", "info");
-        go_back();
-            return;
-    }
-    case 1:
-    {
-        string new_currency, new_cur_rate;
-
-        Msg("Enter currency name", "prompt");
-        cin>>new_currency;
-
-        if (new_currency.size() != 3 ||
-                !isalpha(new_currency[0]) ||
-                !isalpha(new_currency[1]) ||
-                !isalpha(new_currency[2]))
+        case 1: // Add Currency
         {
-            Msg("Invalid currency name! Use 3 letters (e.g., USD).", "error");
+            string new_currency, new_cur_rate;
+
+            Msg("Enter currency name", "prompt");
+            cin >> new_currency;
+
+            if (new_currency.size() != 3 ||
+                    !isalpha(new_currency[0]) ||
+                    !isalpha(new_currency[1]) ||
+                    !isalpha(new_currency[2]))
+            {
+                Msg("Invalid currency name! Use 3 letters (e.g., USD).", "error");
+                go_back();
+                break;
+            }
+
+            Msg("Enter rate", "prompt");
+            cin >> new_cur_rate;
+
+            for (char &c : new_currency)
+                c = toupper(c);
+
+            stringstream ss(new_cur_rate);
+            double rate;
+            if (!(ss >> rate) || !(ss.eof()) || rate <= 0)
+            {
+                Msg("Invalid rate! Must be a positive number.", "error");
+                go_back();
+                break;
+            }
+
+            Converter::types.push_back(new_currency);
+            Converter::rates.push_back(rate);
+            Msg("Currency added successfully!", "success");
             go_back();
-            return;
+            break;
         }
-
-        Msg("Enter rate", "prompt");
-        cin>>new_cur_rate;
-
-
-
-        for (char &c : new_currency)
+        case 2: // Remove Currency
         {
-            c = toupper(c);
-        }
-        stringstream ss(new_cur_rate);
-        double rate;
-        if (!(ss >> rate) || !(ss.eof()) || rate <= 0)
-        {
-            Msg("Invalid rate! Must be a positive number.", "error");
+            if (Converter::types.empty())
+            {
+                Msg("No currencies available to delete!", "error");
+                go_back();
+                break;
+            }
+
+            int choice = menu(Converter::types, "Choose Currency Type : ");
+            Converter::types.erase(Converter::types.begin() + choice);
+            Converter::rates.erase(Converter::rates.begin() + choice);
+            Msg("Deleted successfully!", "success");
             go_back();
+            break;
+        }
+        case 3: // Exit
             return;
         }
-
-        Converter::types.push_back(new_currency);
-        Converter::rates.push_back(rate);
-        Msg("Currency added successfully!", "success");
-        go_back();
-            return;
     }
-    case 2:
-    {
-        int choice = menu(Converter::types, "Choose Currency Type : ");
-        Converter::types.erase(Converter::types.begin() + choice);
-        Converter::rates.erase(Converter::rates.begin() + choice);
-        Msg("Deleted Successfully","success");
-        go_back();
-            return;
-    }
-    case 3:
-    {
-        return;
-    }
-    }
-    go_back();
-    return;
 }
+
+
 
 
 Admin::Admin()
@@ -247,10 +270,19 @@ Admin::Admin()
     Msg("Enter Pin", "prompt");
     read_password(admin_pass);
 
-    int admin_pin= stoi(admin_pass);
-    if(admin_pin != ADMIN_PIN)
+    int admin_pin;
+    std::stringstream ss(admin_pass);
+
+    if (!(ss >> admin_pin) || !(ss.eof()))
     {
-        Msg("Password Incorrect. Access denied.","error");
+        Msg("Invalid input. Access denied.", "error");
+        go_back();
+        return;
+    }
+
+    if (admin_pin != ADMIN_PIN)
+    {
+        Msg("Password Incorrect. Access denied.", "error");
         go_back();
         return;
     }
@@ -290,4 +322,3 @@ Admin::Admin()
         }
     }
 }
-
