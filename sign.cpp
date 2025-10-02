@@ -93,7 +93,7 @@ void SignIn::signin_general() {
     read_password(password);
 
     int index = -1;
-    for(int i = 0; i < Account_vector.size(); i++) {
+    for(int i = 0; i < (int)Account_vector.size(); i++) {
         if(Account_vector[i].nid == nid) {
             index = i;
             break;
@@ -110,4 +110,3 @@ void SignIn::signin_general() {
 
     go_back();
 }
-
