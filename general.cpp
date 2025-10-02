@@ -32,6 +32,7 @@ void AccountHolder::collect_info()
             if (i == ENTRY_LIMIT)
             {
                 Msg("Try again later", "error");
+                go_back();
                 return;
             }
             else Msg("Invalid name. Try again.", "error");
@@ -48,6 +49,7 @@ void AccountHolder::collect_info()
             if (i == ENTRY_LIMIT)
             {
                 Msg("Try again later", "error");
+                go_back();
                 return;
             }
             else Msg("Invalid name. Try again.", "error");
@@ -63,6 +65,7 @@ void AccountHolder::collect_info()
             if (i == ENTRY_LIMIT)
             {
                 Msg("Try again later", "error");
+                go_back();
                 return;
             }
             else Msg("Passwords don't match! Type again.", "error");
@@ -86,6 +89,7 @@ void AccountHolder::collect_info()
             if (i == ENTRY_LIMIT)
             {
                 Msg("Try again later", "error");
+                go_back();
                 return;
             }
             else Msg("NID is not valid.", "error");
@@ -352,4 +356,3 @@ void AccountHolder::complainBox(string nid) {
         }
     }
 }
-
