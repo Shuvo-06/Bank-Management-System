@@ -8,8 +8,6 @@ using namespace std;
 #define ADMIN_PIN 1098765486
 #define STARTING_ID 2307001
 
-
-
 class Admin {
 public:
     Admin();
