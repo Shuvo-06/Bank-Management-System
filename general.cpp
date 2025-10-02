@@ -252,6 +252,7 @@ void AccountHolder::accntHolderInfo()
 
     for (auto &acc : Account_vector)
     {
+        if(acc.nid=="0") continue;
         string pass = acc.password;
         Encryption::encrypt(pass);
 
