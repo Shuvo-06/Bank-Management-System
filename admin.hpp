@@ -6,7 +6,7 @@
 using namespace std;
 
 #define ADMIN_PIN 1098765486
-#define STARTING_ID 2307001
+#define STARTING_ID 2307000
 
 class Admin {
 public:
@@ -21,3 +21,4 @@ public:
 
 
 #endif
+
