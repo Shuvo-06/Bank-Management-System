@@ -6,8 +6,8 @@ vector <Complaints> Complaints_vector_t; // according to time
 map <string, vector <Complaints>> Complaints_vector_n; // according to NID
 int Complaint::index_of_pending, Complaint::total_complaint;
 
-void Complaint::submit_complain(string nid)
-{
+void Complaint::submit_complain(string nid) {
+    clear_screen();
     Msg("Enter your complaint", "prompt");
 
     Complaints c;
@@ -25,8 +25,7 @@ void Complaint::submit_complain(string nid)
     return;
 }
 
-void Complaint::show_complains_by_nid(string nid)  // Account Holder functionality
-{
+void Complaint::show_complains_by_nid(string nid) { // Account Holder functionality
     clear_screen();
     header("Your Complains", MAGENTA, 50);
 
@@ -66,6 +65,7 @@ void Complaint::show_all_complains() // Admin functionality
     if (Complaints_vector_t.empty())
     {
         Msg("The complaint box is empty!!!", "warning");
+        go_back();
         return;
     }
 
@@ -90,10 +90,10 @@ void Complaint::show_all_complains() // Admin functionality
 }
 
 // change status
-void Complaint::update_first_complain_status()
-{
+void Complaint::update_first_complain_status() {
+    clear_screen();
     index_of_pending=-1;
-    for (int i = 0; i < Complaints_vector_t.size(); i++) {
+    for (int i = 0; i < (int)Complaints_vector_t.size(); i++) {
     if (!Complaints_vector_t[i].resolved) {
         index_of_pending = i;
         break;
@@ -106,8 +106,7 @@ void Complaint::update_first_complain_status()
         return;
     }
 
-    for (int i = index_of_pending, idx = 1; i < Complaints_vector_t.size(); i++, idx++)
-    {
+    for (int i = index_of_pending, idx = 1; i < (int)Complaints_vector_t.size(); i++, idx++) {
         auto &c = Complaints_vector_t[i];
         ostringstream title;
         title << idx << ". Complaint";
@@ -134,4 +133,3 @@ void Complaint::update_first_complain_status()
     }
     go_back();
 }
-
