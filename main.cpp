@@ -8,10 +8,10 @@
 #include "complaint.hpp"
 using namespace std;
 
-/*-----------------------------------------------------------------------
-             Global Functions --> Name, NID and Password Validation
--------------------------------------------------------------------------*/
 
+/*-----------------------------------------------------------------------
+            Functions to Read From and Save To  Files
+-------------------------------------------------------------------------*/
 vector<AccountData> Account_vector;
 vector<EmployeeData> Employee_vector;
 
