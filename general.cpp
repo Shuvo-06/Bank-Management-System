@@ -14,7 +14,7 @@ extern vector<AccountData> Account_vector;  // actual storage
 
 /* Account holder signup */
 //Constructor for sign-up
-AccountHolder::AccountHolder(double deposit)   // don't add default values twice
+AccountHolder::AccountHolder(double deposit)   
 {
     this->deposit = deposit;
     collect_info();
@@ -357,3 +357,4 @@ void AccountHolder::complainBox(string nid) {
         }
     }
 }
+
