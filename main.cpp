@@ -9,7 +9,7 @@
 using namespace std;
 
 /*-----------------------------------------------------------------------
-             Global Functions --> Name, NID and Password Validation
+    Global Functions --> Loading Data From and Saving Data Into Files
 -------------------------------------------------------------------------*/
 
 vector<AccountData> Account_vector;
@@ -270,3 +270,4 @@ int main() {
         }
     }
 }
+
