@@ -11,6 +11,31 @@
 ---------------------------------------*/
 
 extern vector<AccountData> Account_vector;  // actual storage
+        // Operator Overloading for AccountData
+        //==============================
+        ostream& operator<<(ostream& os, const AccountData& acc) {
+            os << "Name: " << acc.name << "\n";
+            os << "NID: " << acc.nid << "\n";
+            os << "Password: " << acc.password << "\n";
+            os << "Deposit: " << fixed << setprecision(2) << acc.deposit << " BDT\n";
+            return os;
+        }
+
+        istream& operator>>(istream& is, AccountData& acc) {
+            cout << "Enter Name: ";
+            getline(is >> ws, acc.name);
+
+            cout << "Enter NID: ";
+            is >> acc.nid;
+
+            cout << "Enter Password: ";
+            is >> acc.password;
+
+            cout << "Enter Initial Deposit: ";
+            is >> acc.deposit;
+
+            return is;
+        }
 
 /* Account holder signup */
 //Constructor for sign-up
@@ -357,4 +382,5 @@ void AccountHolder::complainBox(string nid) {
         }
     }
 }
+
 
