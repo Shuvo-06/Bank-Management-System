@@ -17,7 +17,10 @@ struct AccountData {
 
 // Global vector for all account holders
 extern vector<AccountData> Account_vector;
-
+// Operator Overloading Declarations
+// ---------------------------------
+ostream& operator<<(ostream& os, const AccountData& acc);
+istream& operator>>(istream& is, AccountData& acc);
 // ---------------------------------
 // Account Holder Class
 // ---------------------------------
@@ -41,3 +44,4 @@ public:
 };
 
 #endif // GENERAL_HPP
+
