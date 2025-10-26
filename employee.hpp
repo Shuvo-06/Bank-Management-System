@@ -26,8 +26,9 @@ struct EmployeeData {
     string password;
 };
 
-
+// Forward declare AccountData if you have it in another header
 struct AccountData;
+bool operator==(const std::vector<AccountData>& vec, const std::string& sid);
 
 
 // ---------------------------------
