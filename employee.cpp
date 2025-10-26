@@ -10,21 +10,49 @@ int Employee::employee_count;
 
 Employee::Employee(int) {} //Empty constructor for account holder to use
 
+//Overloaded Operators
+
+AccountData operator +=(AccountData &cus, double am){
+    cus.deposit+=am;
+    return cus;
+}
+
+AccountData operator -=(AccountData &cus, double am){
+    cus.deposit-=am;
+    return cus;
+}
+
+bool operator==(const std::vector<AccountData>& vec, const std::string& sid) {
+
+
+    auto it = std::lower_bound(vec.begin(), vec.end(), sid,
+        [](const AccountData& acc, const std::string& value) {
+            return acc.nid < value;
+        });
+
+       if (it != Account_vector.end() && it->nid == sid && it->nid !="0")
+    {
+        Msg("Account: " + it->name + " (ID: " + it->nid + ") << Balance: " + to_string(it->deposit), "info");
+    }
+    else
+    {
+        Msg("Account with ID " + sid + " not found!", "error");
+    }
+}
+
+
+
 //Constructor for SignUp
-Employee::Employee()
-{
+Employee::Employee() {
     ++employee_id;
     ++employee_count;
 
-    for (int i = 1; i <= ENTRY_LIMIT; i++)
-    {
+    for (int i = 1; i <= ENTRY_LIMIT; i++) {
         Msg("Name", "prompt");
         getline(cin >> ws, name);
         if (check_name_validity(name)) break;
-        else
-        {
-            if (i == ENTRY_LIMIT)
-            {
+        else {
+            if (i == ENTRY_LIMIT) {
                 Msg("Try again later", "error");
                 go_back();
                 return;
@@ -33,15 +61,12 @@ Employee::Employee()
         }
     }
 
-    for (int i = 1; i <= ENTRY_LIMIT; i++)
-    {
+    for (int i = 1; i <= ENTRY_LIMIT; i++) {
         Msg("Password", "prompt");
         read_password(password);
         if (check_pass_validity(password)) break;
-        else
-        {
-            if (i == ENTRY_LIMIT)
-            {
+        else {
+            if (i == ENTRY_LIMIT) {
                 Msg("Try again later", "error");
                 go_back();
                 return;
@@ -49,22 +74,18 @@ Employee::Employee()
         }
     }
 
-    for (int i = 1; i <= ENTRY_LIMIT; i++)
-    {
+    for (int i = 1; i <= ENTRY_LIMIT; i++) {
         Msg("Retype Password", "prompt");
         read_password(conf_pass);
-        if (password != conf_pass)
-        {
-            if (i == ENTRY_LIMIT)
-            {
+        if (password != conf_pass) {
+            if (i == ENTRY_LIMIT) {
                 Msg("Try again later.", "error");
                 go_back();
                 return;
             }
             else Msg("Passwords don't match! Type again.", "error");
         }
-        else
-        {
+        else {
             Encryption::encrypt(password);
             break;
         }
@@ -83,20 +104,21 @@ Employee::Employee()
 }
 
 //Constructor for SignIn
-Employee::Employee(string name, string password)
-{
+Employee::Employee(string name, string password) {
     this->name=name;
     this->password=password;
 
 }
 
 /*Employee SignIn*/
-void Employee::employee_dashboard(int id)
-{
+void Employee::employee_dashboard(int id) {
     clear_screen();
+    std::sort(Account_vector.begin(), Account_vector.end(),
+    [](const AccountData& a, const AccountData& b) {
+        return a.nid < b.nid;
+    });
 
-    while (true)
-    {
+    while (true) {
         vector<string> options =
         {
             "Update Profile",
@@ -127,20 +149,17 @@ void Employee::employee_dashboard(int id)
         case 4:
             transaction_history();
             break;
-        case 5:
-        {
+        case 5:{
             Complaint::update_first_complain_status();
             break;
-        }
-        default:
+        }default:
             return;
         }
     }
 
 
 }
-void Employee::remove_account()
-{
+void Employee::remove_account() {
     clear_screen();
     string nrid;
     Msg("Enter Account NID","prompt");
@@ -155,25 +174,7 @@ void Employee::remove_account()
     if (it != Account_vector.end() && it->nid == nrid)
     {
         Msg("Removing Account Holder: " + it->name + " (ID: " + it->nid + ")", "success");
-        // Mark complaints in Complaints_vector_n
-        for (auto &entry : Complaints_vector_n)
-        {
-            for (auto &comp : entry.second)
-            {
-                if (comp.nid == it->nid)
-                    comp.nid = "0";
-            }
-        }
-
-        // Mark complaints in Complaints_vector_t
-        for (auto &comp : Complaints_vector_t)
-        {
-            if (comp.nid == it->nid)
-                comp.nid = "0";
-        }
-
-        // Finally mark the account itself as ghost
-        it->nid = "0";
+        Account_vector.erase(it);
     }
     else
     {
@@ -183,29 +184,17 @@ void Employee::remove_account()
     go_back();
     return;
 }
+
 void Employee::search_account()
 {
     clear_screen();
     string sid;
-    Msg("Enter Account ID","prompt");
-    cin>>sid;
+    Msg("Enter Account ID", "prompt");
+    cin >> sid;
 
-    auto it = lower_bound(Account_vector.begin(), Account_vector.end(), sid,
-                          [](const AccountData &acc, string value)
-    {
-        return acc.nid < value;
-    });
-    if (it != Account_vector.end() && it->nid == sid && it->nid !="0")
-    {
-        Msg("Account: " + it->name + " (ID: " + it->nid + ") << Balance: " + to_string(it->deposit), "info");
-    }
-    else
-    {
-        Msg("Account with ID " + sid + " not found!", "error");
-    }
+    Account_vector == sid;
 
     go_back();
-    return;
 }
 void Employee::transaction_history()
 {
@@ -215,13 +204,6 @@ void Employee::transaction_history()
     string nid;
     Msg("Enter Account NID","prompt");
     cin >> nid;
-    //Handling ghost account
-    if(nid=="0")
-    {
-        Msg("Account No Longer Available", "warning");
-        go_back();
-        return;
-    }
 
     int index = -1;
     for (int i = 0; i < (int)Account_vector.size(); i++)
@@ -247,8 +229,7 @@ void Employee::transaction_history()
          << "+------------------+------------------------------+\n" << RESET;
 
 
-    for (double t : Account_vector[index].history)
-    {
+    for (double t : Account_vector[index].history) {
         string type = (t >= 0 ? "Deposit" : "Withdrawal");
 
         string color = (t >= 0 ? GREEN : RED);
@@ -266,15 +247,14 @@ void Employee::transaction_history()
 
 }
 
-void Employee::deposit_request(int index, double amount, string dep)
-{
-    if (amount <= 0)
-    {
+void Employee::deposit_request(int index, double amount, string dep) {
+    if (amount <= 0) {
         Msg("Invalid deposit amount","error");
         return;
     }
 
-    Account_vector[index].deposit += amount;
+
+    Account_vector[index]+= amount;
     Account_vector[index].history.push_back(amount); // Positive for deposit
 
     ostringstream oss;
@@ -284,21 +264,18 @@ void Employee::deposit_request(int index, double amount, string dep)
     Msg(oss.str(), "success");
 }
 
-void Employee:: withdraw_request(int index, double amount, string with)
-{
-    if (amount <= 0)
-    {
+void Employee:: withdraw_request(int index, double amount, string with){
+    if (amount <= 0) {
         Msg("Invalid withdrawal amount.","error");
         return;
     }
 
-    if (Account_vector[index].deposit < amount)
-    {
+    if (Account_vector[index].deposit < amount) {
         Msg("Insufficient balance.","warning");
         return;
     }
 
-    Account_vector[index].deposit -= amount;
+    Account_vector[index]-= amount;
     Account_vector[index].history.push_back(-amount); // Negative for withdrawal
 
     ostringstream oss;
@@ -316,15 +293,13 @@ void Employee::updateEmployee(int id)
     });
     int index = it - Employee_vector.begin();
 
-    while (true)
-    {
+    while (true) {
         vector<string> options = {"Update Name", "Change Password", "Exit"};
         int op = menu(options, "Update Information");
 
         switch (op)
         {
-        case 0:
-        {
+        case 0: {
             Msg("Type Name", "prompt");
             string new_name;
             getline(cin >> ws, new_name);
@@ -339,15 +314,13 @@ void Employee::updateEmployee(int id)
             go_back();
             break;
         }
-        case 1:
-        {
+        case 1: {
             Msg("Enter current password", "prompt");
             string old_pass;
             read_password(old_pass);
             Encryption::encrypt(old_pass);
 
-            if (old_pass != Employee_vector[index].password)
-            {
+            if (old_pass != Employee_vector[index].password) {
                 Msg("Incorrect current password!", "error");
                 go_back();
                 break;
@@ -361,15 +334,13 @@ void Employee::updateEmployee(int id)
             string confirm_pass;
             read_password(confirm_pass);
 
-            if (new_pass != confirm_pass)
-            {
+            if (new_pass != confirm_pass) {
                 Msg("Passwords do not match!", "error");
                 go_back();
                 break;
             }
 
-            if (!check_pass_validity(new_pass))
-            {
+            if (!check_pass_validity(new_pass)) {
                 Msg("Password does not meet requirements!", "error");
                 go_back();
                 break;
