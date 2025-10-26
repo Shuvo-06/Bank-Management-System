@@ -1,21 +1,29 @@
-#ifndef SIGN_HPP
-#define SIGN_HPP
+#ifndef COMPLAINT_HPP
+#define COMPLAINT_HPP
 
-#include <bits/stdc++.h>
+#include "tools.hpp"
 using namespace std;
 
-class SignUp {
-    string name, password, nid;
-public:
-    SignUp();
+struct Complaints {
+    string nid;
+    bool resolved;  // false = pending, true = resolved
+    string complain;
 };
 
-class SignIn {
+extern vector <Complaints> Complaints_vector_t; // according to time
+extern map <string, vector <Complaints>> Complaints_vector_n; // according to NID
+
+class Complaint{
+    static int index_of_pending, total_complaint;
 public:
-    SignIn();
-    void signin_employee();
-    void signin_general();
+    static void submit_complain(string NID); // used to submit a new complaint, account holders will use this function
+
+    static void show_complains_by_nid(string NID);
+
+    static void show_all_complains();
+
+    static void update_first_complain_status();
+
 };
 
-
-#endif // SIGN_HPP
+#endif //COMPLAINT_HPP
