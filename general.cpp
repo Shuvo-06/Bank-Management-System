@@ -11,35 +11,27 @@
 ---------------------------------------*/
 
 extern vector<AccountData> Account_vector;  // actual storage
-        // Operator Overloading for AccountData
-        //==============================
-        ostream& operator<<(ostream& os, const AccountData& acc) {
-            os << "Name: " << acc.name << "\n";
-            os << "NID: " << acc.nid << "\n";
-            os << "Password: " << acc.password << "\n";
-            os << "Deposit: " << fixed << setprecision(2) << acc.deposit << " BDT\n";
-            return os;
-        }
 
-        istream& operator>>(istream& is, AccountData& acc) {
-            cout << "Enter Name: ";
-            getline(is >> ws, acc.name);
+// Operator Overloading for AccountData
+//======================================
+ostream& operator<<(ostream& os, const AccountData& acc)
+{
+        string pass = acc.password;
+        Encryption::encrypt(pass);
 
-            cout << "Enter NID: ";
-            is >> acc.nid;
+        os<< "| " << setw(28) << left << acc.name
+             << "     | " << setw(16) << left << acc.nid
+             << " | " << setw(16) << left << pass
+             << " | " << setw(30) << right << fixed << setprecision(2) << acc.deposit << " |\n";
 
-            cout << "Enter Password: ";
-            is >> acc.password;
+             return os;
+}
 
-            cout << "Enter Initial Deposit: ";
-            is >> acc.deposit;
 
-            return is;
-        }
 
 /* Account holder signup */
 //Constructor for sign-up
-AccountHolder::AccountHolder(double deposit)   
+AccountHolder::AccountHolder(double deposit)   // don't add default values twice
 {
     this->deposit = deposit;
     collect_info();
@@ -47,6 +39,7 @@ AccountHolder::AccountHolder(double deposit)
 
 void AccountHolder::collect_info()
 {
+
     for (int i = 1; i <= ENTRY_LIMIT; i++)
     {
         Msg("Name", "prompt");
@@ -273,21 +266,11 @@ void AccountHolder::accntHolderInfo()
          << "                             | " << RED << "NID" << RESET
          << "              | " << RED << "Password" << RESET
          << "         | " << RED << "Deposit" << RESET << "                        |\n";
-    cout << "+----------------------------------+------------------+------------------+--------------------------------+\n";
-
-    for (auto &acc : Account_vector)
-    {
-        if(acc.nid=="0") continue;
-        string pass = acc.password;
-        Encryption::encrypt(pass);
-
-        cout << "| " << setw(28) << left << acc.name
-             << "     | " << setw(16) << left << acc.nid
-             << " | " << setw(16) << left << pass
-             << " | " << setw(30) << right << fixed << setprecision(2) << acc.deposit << " |\n";
-    }
 
     cout << "+----------------------------------+------------------+------------------+--------------------------------+\n";
+    for (auto &acc : Account_vector) cout<<acc;
+    cout << "+----------------------------------+------------------+------------------+--------------------------------+\n";
+
     go_back();
     return;
 }
@@ -296,18 +279,21 @@ void AccountHolder::accntHolderInfo()
 /*Updating Account Holder Info*/
 void AccountHolder::updateCustomer(int index)
 {
-    while (true) {
+    while (true)
+    {
         vector<string> options = {"Update Name", "Change Password", "Exit"};
         int op = menu(options, "Update Information");
 
         switch(op)
         {
-        case 0: {
+        case 0:
+        {
             Msg("Type Name", "prompt");
             string new_name;
             getline(cin >> ws, new_name);
 
-            if (!check_name_validity(new_name)) {
+            if (!check_name_validity(new_name))
+            {
                 Msg("Invalid name!", "error");
                 go_back();
                 break;
@@ -318,13 +304,16 @@ void AccountHolder::updateCustomer(int index)
             go_back();
             break;
 
-        }case 1: {
+        }
+        case 1:
+        {
             Msg("Enter current password", "prompt");
             string old_pass;
             read_password(old_pass);
             Encryption::encrypt(old_pass);
 
-            if (old_pass != Account_vector[index].password) {
+            if (old_pass != Account_vector[index].password)
+            {
                 Msg("Incorrect current password!", "error");
                 go_back();
                 break;
@@ -338,13 +327,15 @@ void AccountHolder::updateCustomer(int index)
             string confirm_pass;
             read_password(confirm_pass);
 
-            if (new_pass != confirm_pass) {
+            if (new_pass != confirm_pass)
+            {
                 Msg("Passwords do not match!", "error");
                 go_back();
                 break;
             }
 
-            if (!check_pass_validity(new_pass)) {
+            if (!check_pass_validity(new_pass))
+            {
                 Msg("Password does not meet requirements!", "error");
                 go_back();
                 break;
@@ -364,23 +355,24 @@ void AccountHolder::updateCustomer(int index)
 }
 
 
-void AccountHolder::complainBox(string nid) {
-    while (true) {
+void AccountHolder::complainBox(string nid)
+{
+    while (true)
+    {
         vector<string> options = {"Submit Complaint", "Show Complaint", "Exit"};
         int op = menu(options, "Complain Box");
 
-        switch(op) {
-            case 0:
-                Complaint::submit_complain(nid);
-                break;
-            case 1:
-                Complaint::show_complains_by_nid(nid);
-                break;
-            case 2:
-                return;  // leave the complain box
+        switch(op)
+        {
+        case 0:
+            Complaint::submit_complain(nid);
+            break;
+        case 1:
+            Complaint::show_complains_by_nid(nid);
+            break;
+        case 2:
+            return;  // leave the complain box
 
         }
     }
 }
-
-
