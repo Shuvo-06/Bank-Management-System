@@ -11,16 +11,16 @@ struct AccountData {
     string name;
     string nid;
     string password;
-    double deposit;
+    double deposit=0.0;
+    double withdraw=0.0;
     vector<double> history;
+
+
 };
 
 // Global vector for all account holders
 extern vector<AccountData> Account_vector;
-// Operator Overloading Declarations
-// ---------------------------------
-ostream& operator<<(ostream& os, const AccountData& acc);
-istream& operator>>(istream& is, AccountData& acc);
+
 // ---------------------------------
 // Account Holder Class
 // ---------------------------------
@@ -41,7 +41,7 @@ public:
     static void accntHolderInfo();              // Display all account holder info
     static void updateCustomer(int);
     static void complainBox(string);
+
 };
 
 #endif // GENERAL_HPP
-
