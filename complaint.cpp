@@ -72,7 +72,6 @@ void Complaint::show_all_complains() // Admin functionality
     int idx = 1;
     for (auto x : Complaints_vector_t)
     {
-        if(x.nid=="0") continue;
         string status = x.resolved
                         ? (string(GREEN) + "Resolved" + RESET)
                         : (string(YELLOW) + "Pending" + RESET);
@@ -95,7 +94,6 @@ void Complaint::update_first_complain_status() {
     clear_screen();
     index_of_pending=-1;
     for (int i = 0; i < (int)Complaints_vector_t.size(); i++) {
-    if(Complaints_vector_t[i].nid=="0") continue;
     if (!Complaints_vector_t[i].resolved) {
         index_of_pending = i;
         break;
