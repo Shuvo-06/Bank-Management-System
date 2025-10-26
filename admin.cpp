@@ -11,6 +11,17 @@ using namespace std;
         Admin Panel
 --------------------------*/
 
+//Overloaded Operators
+AccountData operator +=(AccountData &cus, vector<double>&history){
+    for(auto &val:history){
+        if(val>=0) cus.deposit+=val;
+        else cus.withdraw-=val;
+    }
+
+    return cus;
+}
+
+//AdminnFunctionalities
 void Admin::employee_info()
 {
     while (true)
@@ -63,14 +74,14 @@ void Admin::searchEmployee()
     string SID;
     Msg("Enter employee ID", "prompt");
     cin >> SID;
-    int sid;
-    try {
-        sid = stoi(SID); // safe conversion
-    } catch (...) {
-        Msg("Invalid ID format!", "error");
-        go_back();
-        return;
+    for(auto &c:SID){
+        if(!isdigit(c)){
+            Msg("Invalid Input", "error");
+            go_back();
+            return;
+        }
     }
+    int sid= stoi(SID);
 
     auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), sid,
                           [](const EmployeeData &emp, int value)
@@ -91,14 +102,14 @@ void Admin::removeEmployee()
     string RID;
     Msg("Enter Employee ID", "prompt");
     cin >> RID;
-    int rid;
-    try {
-        rid = stoi(RID); // safe conversion
-    } catch (...) {
-        Msg("Invalid ID format!", "error");
-        go_back();
-        return;
+    for(auto &c:RID){
+        if(!isdigit(c)){
+            Msg("Invalid Input", "error");
+            go_back();
+            return;
+        }
     }
+    int rid =stoi(RID);
 
     auto it = lower_bound(Employee_vector.begin(), Employee_vector.end(), rid,
                           [](const EmployeeData &emp, int value)
@@ -119,6 +130,8 @@ void Admin::removeEmployee()
     return;
 }
 
+
+
 void Admin::cashManagement()
 {
     clear_screen();
@@ -134,24 +147,20 @@ void Admin::cashManagement()
     cout << "+----------------------+----------------------+----------------------+-----------------------------+\n";
 
     for (int i = 0; i < (int)Account_vector.size(); i++) {
-        double deposit = 0.0, withdraw = 0.0;
 
-        if(Account_vector[i].nid=="0")continue;
-        for (size_t j = 0; j < Account_vector[i].history.size(); j++)
-        {
-            if (Account_vector[i].history[j] > 0) deposit += Account_vector[i].history[j];
-            else withdraw += (-Account_vector[i].history[j]);
-        }
+        AccountData sum;
+        sum+= Account_vector[i].history;
+
+        total_Deposit += sum.deposit;
+        total_Withdraw += sum.withdraw;
 
 
-        total_Deposit += deposit;
-        total_Withdraw += withdraw;
 
 
         cout << "| " << setw(20) << left << Account_vector[i].nid
-             << " | " << setw(20) << left << fixed << setprecision(2) << deposit
-             << " | " << setw(20) << left << fixed << setprecision(2) << withdraw
-             << " | " << setw(27) << left << fixed << setprecision(2) << (deposit - withdraw)
+             << " | " << setw(20) << left << fixed << setprecision(2) << sum.deposit
+             << " | " << setw(20) << left << fixed << setprecision(2) << sum.withdraw
+             << " | " << setw(27) << left << fixed << setprecision(2) << (sum.deposit - sum.withdraw)
              << " |\n";
     }
 
@@ -233,7 +242,7 @@ void Admin::manageRates()
         Converter::rates.push_back(rate);
         Msg("Currency added successfully!", "success");
         go_back();
-            break;
+        break;
     }
     case 2:
     {
@@ -242,7 +251,7 @@ void Admin::manageRates()
         Converter::rates.erase(Converter::rates.begin() + choice);
         Msg("Deleted Successfully","success");
         go_back();
-            break;
+        break;
     }
     case 3:
     {
@@ -250,8 +259,6 @@ void Admin::manageRates()
     }
     }
    }
-    go_back();
-    return;
 }
 
 
@@ -260,14 +267,15 @@ Admin::Admin()
     string admin_pass;
     Msg("Enter Pin", "prompt");
     read_password(admin_pass);
-    int admin_pin;
-    try {
-        admin_pin = stoi(admin_pass); // safe conversion
-    } catch (...) {
-        Msg("Invalid input!", "error");
-        go_back();
-        return;
+
+    for(auto &c:admin_pass){
+        if(!isdigit(c)){
+            Msg("Invalid Input", "error");
+            go_back();
+            return;
+        }
     }
+    int admin_pin= stoi(admin_pass);
     if(admin_pin != ADMIN_PIN)
     {
         Msg("Password Incorrect. Access denied.","error");
