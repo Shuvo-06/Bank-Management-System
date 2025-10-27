@@ -4,19 +4,15 @@
 #include "tools.hpp"
 using namespace std;
 
-struct Complaints {
-    string nid;
-    bool resolved;  // false = pending, true = resolved
-    string complain;
-};
-
-extern Complaints Complaints_array[100000];
-
 class Complaint{
 public:
-    static int index_of_pending, total_complaint;
+    string nid;
+    bool resolved;
+    string complain;
 
-    static void submit_complain(string NID); // used to submit a new complaint, account holders will use this function
+    static int total_complaint, index_of_pending;
+
+    static void submit_complain(string NID);
 
     static void show_complains_by_nid(string NID);
 
@@ -24,6 +20,10 @@ public:
 
     static void update_first_complain_status();
 
+    void operator += (Complaint &c);
 };
+
+extern Complaint Complaints_array[100000];
+
 
 #endif //COMPLAINT_HPP
