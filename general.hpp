@@ -42,6 +42,7 @@ public:
     static void updateCustomer(int);
     static void complainBox(string);
 
+
 };
 
 #endif // GENERAL_HPP
