@@ -15,6 +15,16 @@ using namespace std;
 vector<AccountData> Account_vector;
 vector<EmployeeData> Employee_vector;
 
+//Overloaded operators
+ostream& operator << (ostream & output, AccountData &acc){
+  for(auto &t : acc.history){
+    output << acc.nid << " " << t << "\n";
+  }
+  return output;
+
+}
+
+
 /* Load accounts from file */
 void load_accounts() {
     ifstream file("customer.txt");
@@ -145,14 +155,13 @@ void save_employees() {
     file.close();
 }
 
+
 /*save account history into file*/
 void save_histories() {
     ofstream file("history.txt", ios::trunc);
     if (!file.is_open()) return;
     for (auto &acc : Account_vector) {
-        for (double t : acc.history) {
-            file << acc.nid << " " << t << "\n";
-        }
+         file<< acc;
     }
     file.close();
 }
@@ -225,10 +234,10 @@ int main() {
 
     // Loads data from previous runs
     load_accounts();
-    load_employees();
     load_histories();
-    load_rates();
     load_complaints();
+    load_rates();
+    load_employees();
 
     while (true) { // main menu
         vector<string> options = {"Sign Up", "Sign In", "Contact Info", "About Us", "Exit"};
