@@ -10,12 +10,12 @@ struct Complaints {
     string complain;
 };
 
-extern vector <Complaints> Complaints_vector_t; // according to time
-extern map <string, vector <Complaints>> Complaints_vector_n; // according to NID
+extern Complaints Complaints_array[100000];
 
 class Complaint{
-    static int index_of_pending, total_complaint;
 public:
+    static int index_of_pending, total_complaint;
+
     static void submit_complain(string NID); // used to submit a new complaint, account holders will use this function
 
     static void show_complains_by_nid(string NID);
