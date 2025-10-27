@@ -132,7 +132,7 @@ void Admin::removeEmployee()
 
 
 
-void Admin::cashManagement()
+void Transaction::cashManagement()
 {
     clear_screen();
     header("CASH MANAGEMENT", YELLOW, 100);
@@ -305,7 +305,7 @@ Admin::Admin()
             AccountHolder::accntHolderInfo();
             break;
         case 2:
-            cashManagement();
+            Transaction::cashManagement();
             break;
         case 3:
             manageRates();
