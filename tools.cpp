@@ -10,11 +10,12 @@ using namespace std;
 #ifdef _WIN32
     BOOL WINAPI ConsoleHandler(DWORD signal) {
         if (signal == CTRL_CLOSE_EVENT) {
-            save_accounts();
-            save_employees();
-            save_histories();
-            save_rates();
-            save_complaints();
+            Loading load;
+            load.save_accounts();
+            load.save_employees();
+            load.save_histories();
+            load.save_rates();
+            load.save_complaints();
             Sleep(1000);
         }
         return TRUE;
