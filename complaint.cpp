@@ -2,23 +2,31 @@
 #include "tools.hpp"
 using namespace std;
 
-Complaints Complaints_array[100000]; // according to time
+Complaint Complaints_array[100000]; // according to time
+
 int Complaint::index_of_pending, Complaint::total_complaint;
+
+
+void Complaint::operator += (Complaint &c) {
+    Complaints_array[total_complaint] = c;
+
+    Msg("Complaint submitted successfully!", "success");
+    total_complaint++;
+}
 
 void Complaint::submit_complain(string nid) {
     clear_screen();
     Msg("Enter your complaint", "prompt");
 
-    Complaints c;
+    Complaint c;
     c.nid = nid;
     c.resolved = false;
     cin.ignore();
     getline(cin, c.complain);
 
-    Complaints_array[total_complaint] = c;
+    Complaint temp;
+    temp += c;
 
-    Msg("Complaint submitted successfully!", "success");
-    total_complaint++;
     go_back();
     return;
 }
@@ -48,8 +56,6 @@ void Complaint::show_complains_by_nid(string nid) { // Account Holder functional
 
         cout << BOLD << CYAN   << "Status  : " << RESET << status << "\n";
         cout << BOLD << CYAN   << "Details : " << RESET << Complaints_array[i].complain << "\n";
-
-        idx++;
     }
     go_back();
 }
