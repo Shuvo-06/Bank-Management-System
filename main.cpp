@@ -26,7 +26,7 @@ ostream& operator << (ostream & output, AccountData &acc){
 
 
 /* Load accounts from file */
-void load_accounts() {
+void Loading::load_accounts() {
     ifstream file("customer.txt");
     if (!file.is_open()) return;
 
@@ -47,7 +47,7 @@ void load_accounts() {
 }
 
 /* Load employees */
-void load_employees() {
+void Loading::load_employees() {
     ifstream file("employee.txt");
     if (!file.is_open()) return;
 
@@ -71,7 +71,7 @@ void load_employees() {
 }
 
 /*load accounts history from file*/
-void load_histories() {
+void Loading::load_histories() {
     ifstream file("history.txt");
     if (!file.is_open()) return;
     string line;
@@ -100,7 +100,7 @@ void load_histories() {
     file.close();
 }
 
-void load_rates() {
+void Loading::load_rates() {
     ifstream file("converter.txt");
 
     if (!file.is_open()) {
@@ -127,7 +127,7 @@ void load_rates() {
 }
 
 /* Save accounts to file */
-void save_accounts() {
+void Loading::save_accounts() {
     ofstream file("customer.txt", ios::trunc); // ios :: trunc tells compiler to override the file
     if (!file.is_open()) {
         Msg("Error saving account data!", "warning");
@@ -142,7 +142,7 @@ void save_accounts() {
 }
 
 /* Save employees */
-void save_employees() {
+void Loading::save_employees() {
     ofstream file("employee.txt", ios::trunc); // ios :: trunc tells compiler to override the file
     if (!file.is_open()) {
         Msg("Error saving employee data!","warning");
@@ -157,7 +157,7 @@ void save_employees() {
 
 
 /*save account history into file*/
-void save_histories() {
+void Loading:: save_histories() {
     ofstream file("history.txt", ios::trunc);
     if (!file.is_open()) return;
     for (auto &acc : Account_vector) {
@@ -166,7 +166,7 @@ void save_histories() {
     file.close();
 }
 
-void save_rates() {
+void Loading::save_rates() {
     ofstream file("converter.txt", ios::trunc);
 
     if (!file.is_open()) {
@@ -185,7 +185,7 @@ void save_rates() {
 
 
 
-void load_complaints() {
+void Loading::load_complaints() {
     Complaints_vector_t.clear();
     Complaints_vector_n.clear();
 
@@ -215,7 +215,7 @@ void load_complaints() {
     file.close();
 }
 
-void save_complaints() {
+void Loading::save_complaints() {
     ofstream file("complaints.txt", ios::trunc);
     if (!file.is_open()) {
         Msg("Something went wrong", "error");
@@ -233,11 +233,10 @@ int main() {
     SetConsoleCtrlHandler(ConsoleHandler, TRUE);  // <--- for 'x' users :)
 
     // Loads data from previous runs
-    load_accounts();
-    load_histories();
-    load_complaints();
-    load_rates();
-    load_employees();
+    Loading load(100);
+
+
+
 
     while (true) { // main menu
         vector<string> options = {"Sign Up", "Sign In", "Contact Info", "About Us", "Exit"};
@@ -268,11 +267,11 @@ int main() {
             break;
         }
         case 4:
-            save_accounts();
-            save_employees();
-            save_histories();
-            save_rates();
-            save_complaints();
+            load.save_accounts();
+            load.save_employees();
+            load.save_histories();
+            load.save_rates();
+            load.save_complaints();
             return 0; // exit program
         }
     }
