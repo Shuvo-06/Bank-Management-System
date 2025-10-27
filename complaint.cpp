@@ -1,9 +1,8 @@
 #include "complaint.hpp"
 #include "tools.hpp"
-
 using namespace std;
-vector <Complaints> Complaints_vector_t; // according to time
-map <string, vector <Complaints>> Complaints_vector_n; // according to NID
+
+Complaints Complaints_array[100000]; // according to time
 int Complaint::index_of_pending, Complaint::total_complaint;
 
 void Complaint::submit_complain(string nid) {
@@ -13,11 +12,10 @@ void Complaint::submit_complain(string nid) {
     Complaints c;
     c.nid = nid;
     c.resolved = false;
-    cin.ignore(); // maybe;
+    cin.ignore();
     getline(cin, c.complain);
 
-    Complaints_vector_t.push_back(c);
-    Complaints_vector_n[nid].push_back(c);
+    Complaints_array[total_complaint] = c;
 
     Msg("Complaint submitted successfully!", "success");
     total_complaint++;
@@ -29,28 +27,27 @@ void Complaint::show_complains_by_nid(string nid) { // Account Holder functional
     clear_screen();
     header("Your Complains", MAGENTA, 50);
 
-    if (Complaints_vector_n[nid].empty())
-    {
+    int cnt = 0;
+    for (int i = 0; i < total_complaint; i++) cnt += (Complaints_array[i].nid == nid);
+    if (cnt == 0) {
         Msg("The complaint box is empty!!!", "success");
         go_back();
         return;
     }
 
     int idx = 1;
-    for (auto &x : Complaints_vector_n[nid])
-    {
-        string status = x.resolved
-                        ? (string(GREEN) + "Resolved" + RESET)
-                        : (string(YELLOW) + "Pending" + RESET);
+    for (int i = 0; i < total_complaint; i++) {
+        if (Complaints_array[i].nid != nid) continue;
 
+        string status = Complaints_array[i].resolved ? (string(GREEN) + "Resolved" + RESET) : (string(YELLOW) + "Pending" + RESET);
 
         ostringstream title;
-        title << idx << ". Complaint";
+        title << idx++ << ". Complaint";
         subHeader(title.str(), YELLOW, 50);
 
 
-        cout <<BOLD<< CYAN   << "Status  : " << RESET << status << "\n";
-        cout <<BOLD<< CYAN   << "Details : " << RESET << x.complain << "\n";
+        cout << BOLD << CYAN   << "Status  : " << RESET << status << "\n";
+        cout << BOLD << CYAN   << "Details : " << RESET << Complaints_array[i].complain << "\n";
 
         idx++;
     }
@@ -62,28 +59,21 @@ void Complaint::show_all_complains() // Admin functionality
     clear_screen();
     header("All Complains", GREEN, 50);
 
-    if (Complaints_vector_t.empty())
-    {
+    if (total_complaint == 0) {
         Msg("The complaint box is empty!!!", "warning");
         go_back();
         return;
     }
 
-    int idx = 1;
-    for (auto x : Complaints_vector_t)
-    {
-        string status = x.resolved
-                        ? (string(GREEN) + "Resolved" + RESET)
-                        : (string(YELLOW) + "Pending" + RESET);
-
+    for (int i = 0; i < total_complaint; i++) {
+        string status = Complaints_array[i].resolved ? (string(GREEN) + "Resolved" + RESET) : (string(YELLOW) + "Pending" + RESET);
 
         ostringstream title;
-        title << idx << ". Complaint";
+        title << i + 1 << ". Complaint";
         subHeader(title.str(), YELLOW, 50);
-        cout <<BOLD<< CYAN   << "NID     : " << RESET << x.nid << "\n";
+        cout <<BOLD<< CYAN   << "NID     : " << RESET << Complaints_array[i].nid << "\n";
         cout <<BOLD<< CYAN   << "Status  : " << RESET << status << "\n";
-        cout <<BOLD<< CYAN   << "Details : " << RESET << x.complain << "\n";
-        idx++;
+        cout <<BOLD<< CYAN   << "Details : " << RESET << Complaints_array[i].complain << "\n";
     }
     go_back();
     return;
@@ -92,44 +82,36 @@ void Complaint::show_all_complains() // Admin functionality
 // change status
 void Complaint::update_first_complain_status() {
     clear_screen();
-    index_of_pending=-1;
-    for (int i = 0; i < (int)Complaints_vector_t.size(); i++) {
-    if (!Complaints_vector_t[i].resolved) {
-        index_of_pending = i;
-        break;
+    index_of_pending = -1;
+
+    for (int i = 0; i < total_complaint; i++) {
+        if (!Complaints_array[i].resolved) {
+            index_of_pending = i;
+            break;
+        }
     }
-    }
-    if (index_of_pending ==-1)
-    {
-        Msg("The complaint box is empty", "success");
+
+    if (index_of_pending == -1) {
+        Msg("No pending complaints found!", "success");
         go_back();
         return;
     }
 
-    for (int i = index_of_pending, idx = 1; i < (int)Complaints_vector_t.size(); i++, idx++) {
-        auto &c = Complaints_vector_t[i];
-        ostringstream title;
-        title << idx << ". Complaint";
-        subHeader(title.str(), YELLOW, 60);
+    int idx = 1;
+    for (int i = index_of_pending; i < total_complaint; i++) {
+        if (Complaints_array[i].resolved)
+            continue;
 
-        cout << BOLD << CYAN << "NID     : " << RESET << c.nid << "\n";
-        cout << BOLD << CYAN << "Status  : " << YELLOW << "Pending"<<RESET << "\n";
-        cout << BOLD << CYAN << "Details : " << RESET << c.complain << "\n\n";
-
+        cout << "\n-------------------------------------------\n";
+        cout << YELLOW << idx << ". Complaint\n" << RESET;
+        cout << BOLD << CYAN << "NID     : " << RESET << Complaints_array[i].nid << "\n";
+        cout << BOLD << CYAN << "Status  : " << YELLOW << "Pending" << RESET << "\n";
+        cout << BOLD << CYAN << "Details : " << RESET << Complaints_array[i].complain << "\n";
         idx++;
     }
 
-    Msg("The first complaint has been successfully resolved", "success");
-
-    Complaints f = Complaints_vector_t[index_of_pending];
-    Complaints_vector_t[index_of_pending].resolved = true;
-    for (auto &x : Complaints_vector_n[f.nid])
-    {
-        if (x.resolved == false)
-        {
-            x.resolved = true;
-            break;
-        }
-    }
+    Complaints_array[index_of_pending].resolved = true;
+    Msg("The first complaint has been successfully resolved!", "success");
     go_back();
+    return;
 }
