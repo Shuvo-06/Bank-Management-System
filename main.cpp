@@ -186,9 +186,6 @@ void Loading::save_rates() {
 
 
 void Loading::load_complaints() {
-    Complaints_vector_t.clear();
-    Complaints_vector_n.clear();
-
     ifstream file("complaints.txt");
     if (!file.is_open()) {
         Msg("Something went wrong", "error");
@@ -208,8 +205,7 @@ void Loading::load_complaints() {
         c.nid = nid;
         c.resolved = (status == "1");
         c.complain = complain;
-        Complaints_vector_t.push_back(c);
-        Complaints_vector_n[nid].push_back(c);
+        Complaints_array[Complaint::total_complaint++] = c;
     }
 
     file.close();
@@ -222,8 +218,8 @@ void Loading::save_complaints() {
         return;
     }
 
-    for (auto &c : Complaints_vector_t) {
-        file << c.nid << "|" << (c.resolved ? "1" : "0") << "|" << c.complain << "\n";
+    for (int i = 0; i < Complaint::total_complaint; i++) {
+        file << Complaints_array[i].nid << "|" << (Complaints_array[i].resolved ? "1" : "0") << "|" << Complaints_array[i].complain << "\n";
     }
 
     file.close();
