@@ -23,18 +23,26 @@ Converter Converter::operator/(const Converter &usd) {
 }
 
 void Converter::convert_to_bdt(double &amount, string type) {
-    for (int i = 0; i < (int)types.size(); i++) {
+    for (size_t i = 0; i < types.size(); i++) {
         if (types[i] == type) {
-            amount *= rates[i];
+            Converter base(amount, 0);      
+            Converter currency(0, rates[i]);    
+
+            Converter result = base * currency;
+            amount = result.amount;
             return;
         }
     }
 }
 
 void Converter::convert_from_bdt(double &amount, string type) {
-    for (int i = 0; i < (int)types.size(); i++) {
+    for (size_t i = 0; i < types.size(); i++) {
         if (types[i] == type) {
-            amount /= rates[i];
+            Converter base(amount, 0);         
+            Converter currency(0, rates[i]); 
+
+            Converter result = base / currency;
+            amount = result.amount;
             return;
         }
     }
