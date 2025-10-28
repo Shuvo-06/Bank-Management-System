@@ -5,10 +5,15 @@
 using namespace std;
 
 class Converter {
-    public:
+public:
+    double amount,rate;
     static vector<string> types;
     static vector<double> rates;
 
+    Converter(double amt = 0, double r = 1.0);
+
+    Converter operator*(const Converter &usd);
+    Converter operator/(const Converter &usd);
 
     static void convert_to_bdt(double &amount, string type);
     static void convert_from_bdt(double &amount, string type);
